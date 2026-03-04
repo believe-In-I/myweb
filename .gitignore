@@ -1,0 +1,45 @@
+# 依赖目录
+node_modules/
+
+# 构建输出
+dist/
+dist-ssr/
+
+# Vite 缓存
+.vite/
+
+# 环境变量文件（包含敏感信息）
+.env
+.env.local
+.env.*.local
+*.env
+
+# 日志文件
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 编辑器配置（个人偏好，可根据需要调整）
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-*
+
+# macOS 系统文件
+.DS_Store
+Thumbs.db
+
+# 测试覆盖率
+coverage/
+
+# 临时文件
+*.tmp
+*.temp
+
+# 锁文件（可选，保留一个即可）
+# 如果使用 npm，保留 package-lock.json
+# 如果使用 yarn 或 pnpm，可以忽略下面的锁文件
+yarn.lock
+# pnpm-lock.yaml
