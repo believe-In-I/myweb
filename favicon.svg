@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="horse head">
+  <defs>
+    <style>
+      .s{fill:none;stroke:#111;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+      .f{fill:#111}
+    </style>
+  </defs>
+  <!-- mane -->
+  <path class="s" d="M44 98c-8-22-6-46 6-68 6-11 12-18 20-22-18 2-34 14-42 33-10 23-9 46 16 57z"/>
+  <!-- face outline -->
+  <path class="s" d="M92 92c-9 10-23 16-38 14-10-1-17-6-22-12 1-22 7-44 22-58 10-9 22-14 36-12 10 2 16 10 16 20 0 12-6 23-16 31"/>
+  <!-- muzzle -->
+  <path class="s" d="M86 77c8 3 14 9 14 15 0 6-4 10-10 11"/>
+  <!-- eye -->
+  <circle class="f" cx="83" cy="48" r="4"/>
+</svg>
