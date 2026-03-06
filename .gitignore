@@ -38,8 +38,14 @@ coverage/
 *.tmp
 *.temp
 
-# 锁文件（可选，保留一个即可）
-# 如果使用 npm，保留 package-lock.json
-# 如果使用 yarn 或 pnpm，可以忽略下面的锁文件
+# 锁文件（使用 npm 时保留）
 yarn.lock
 # pnpm-lock.yaml
+
+# 后端/服务端文件（如果有独立后端目录）
+# oss/
+# server/
+
+# 上传文件目录（如果有）
+# uploads/
+# files/

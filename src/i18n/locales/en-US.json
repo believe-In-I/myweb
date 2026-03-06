@@ -5,6 +5,7 @@
   },
   "menu": {
     "apiTest": "API Test",
+    "aiChat": "AI Chat",
     "g6Relation": "G6 Relation Graph",
     "updateHistory": "Update History",
     "virtualScroll": "Virtual Scroll",

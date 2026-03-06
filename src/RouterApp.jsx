@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import { Layout, Menu, Breadcrumb, Typography, Avatar, Dropdown, Space, ConfigProvider } from 'antd';
-import { HomeOutlined, CodeOutlined, LineChartOutlined, HistoryOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined, LoadingOutlined } from '@ant-design/icons';
+import { HomeOutlined, CodeOutlined, LineChartOutlined, HistoryOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined, LoadingOutlined, RobotOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import ApiTestPage from './pages/ApiTestPage';
 import UpdateHistoryPage from './pages/UpdateHistoryPage';
@@ -11,6 +11,7 @@ import ThreeJs from '@/pages/threeJs';
 import IndexedDBTestPage from './pages/IndexedDBTestPage';
 import CanvasVirtualListPage from './pages/CanvasVirtualListPage'
 import TestView from './pages/testView'
+import AIChatPage from './pages/AIChatPage';
 import LanguageSwitcher from './components/LanguageSwitcher';
 
 
@@ -21,6 +22,7 @@ const { Title } = Typography;
 // 路由配置
 const routes = [
   { path: '/', nameKey: 'menu.apiTest', icon: <HomeOutlined /> },
+  { path: '/ai-chat', nameKey: 'menu.aiChat', icon: <RobotOutlined /> },
   { path: '/g6-dagre', nameKey: 'menu.g6Relation', icon: <LineChartOutlined /> },
   { path: '/update-history', nameKey: 'menu.updateHistory', icon: <HistoryOutlined /> },
   { path: '/virtual-scroll', nameKey: 'menu.virtualScroll', icon: <BarsOutlined /> },
@@ -58,6 +60,7 @@ const ContentArea = () => {
       <div style={{height:'calc(100vh - 220px)',overflow:'auto'}}>
         <Routes>
           <Route path="/" element={<ApiTestPage />} />
+          <Route path="/ai-chat" element={<AIChatPage />} />
           <Route path="/update-history" element={<UpdateHistoryPage />} />
           <Route path="/g6-dagre" element={<G6RelationGraphPage />} />
           <Route path="/virtual-scroll" element={<VirtualScrollPage />} />

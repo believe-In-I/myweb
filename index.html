@@ -3,7 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title>myweb</title>
+    <!--
+      建议使用 public 下的 favicon（不走打包 hash），避免路径/缓存问题
+      注意：title / favicon 都来自 index.html，如果 CDN 缓存了 /index.html，需要单独 purge
+    -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="/favicon.ico" />
+    <title>牛马帅</title>
   </head>
  
   <body>

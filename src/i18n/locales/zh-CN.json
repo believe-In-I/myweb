@@ -5,6 +5,7 @@
   },
   "menu": {
     "apiTest": "API 测试",
+    "aiChat": "AI 聊天",
     "g6Relation": "G6 关系图",
     "updateHistory": "更新记录",
     "virtualScroll": "虚拟滚动",
