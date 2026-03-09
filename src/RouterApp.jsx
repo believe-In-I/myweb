@@ -12,6 +12,7 @@ import IndexedDBTestPage from './pages/IndexedDBTestPage';
 import CanvasVirtualListPage from './pages/CanvasVirtualListPage'
 import TestView from './pages/testView'
 import AIChatPage from './pages/AIChatPage';
+import LLMAi from './pages/LLMAI'
 import LanguageSwitcher from './components/LanguageSwitcher';
 
 
@@ -30,6 +31,7 @@ const routes = [
   { path: '/threejs', nameKey: 'menu.threejs', icon: <BarsOutlined /> },
   { path: '/indexeddb-test', nameKey: 'menu.indexeddbTest', icon: <CodeOutlined /> },
   { path: '/test-view', nameKey: 'menu.testView', icon: <CodeOutlined /> },
+  { path: '/llm-ai', nameKey: 'menu.llmAi', icon: <CodeOutlined /> },
 ];
 
 // 内容区域组件
@@ -68,6 +70,7 @@ const ContentArea = () => {
           <Route path="/threejs" element={<ThreeJs />} />
           <Route path="/indexeddb-test" element={<IndexedDBTestPage />} />
           <Route path="/test-view" element={<TestView />} />
+          <Route path="/llm-ai" element={<LLMAi />} />
         </Routes>
       </div>
     
@@ -108,7 +111,7 @@ const Sidebar = () => {
       <Menu
         mode="inline"
         theme="dark"
-        style={{ height: '100%', borderRight: 0 }}
+        style={{ borderRight: 0 }}
         items={routes.map((route, index) => ({
           key: route.path,
           icon: route.icon,

@@ -2,9 +2,31 @@ const express = require('express');
 const compression = require('compression');
 const path = require('path');
 const cors = require('cors');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// 配置代理
+app.use('/ollama', createProxyMiddleware({
+  target: 'http://localhost:11434',
+  changeOrigin: true,
+  pathRewrite: {
+    '^/ollama': '', // 去掉 /ollama 前缀
+  },
+  onProxyReq: (proxyReq, req, res) => {
+    // 设置 Origin 头以绕过 Ollama 的 CORS 检查
+    proxyReq.setHeader('Origin', 'http://localhost:11434');
+  },
+}));
+
+app.use('/api', createProxyMiddleware({
+  target: 'http://100.74.18.46:5173/', // 注意：这里指向了开发服务器，生产环境可能需要调整
+  changeOrigin: true,
+  pathRewrite: {
+    '^/api': '',
+  },
+}));
 
 // 启用 gzip/Brotli 压缩
 app.use(compression({
