@@ -1,15 +1,9 @@
 import { useCallback, useState, useRef } from "react";
-import { Ollama } from "ollama";
 import { AIChatInput, AIChatDialogue, Avatar } from "@douyinfe/semi-ui";
 import "./index.less";
 
 const { Configure } = AIChatInput;
-const ollama = new Ollama({
-  host: window.location.origin + "/ollama",
-  headers: {
-    Authorization: "Bearer " + import.meta.env.VITE_LLM_API_KEY,
-  },
-});
+
 
 const modelOptions = [
   { value: "qwen3:latest", label: "qwen3:latest" },
@@ -126,26 +120,27 @@ function LLMAi() {
         { role: "user", content },
         { role: "assistant", content: "" },
       ]);
-      const response = await ollama.chat({
-        // model: "gemma3:latest",
-        model: model,
-        messages: newMessages,
-        stream: true,
-        // think: true,
-      });
-      for await (const part of response) {
-        setDialogue((prev) => {
-          const newDialogue = [...prev];
-          const lastMsg = newDialogue[newDialogue.length - 1];
-          if (lastMsg.role === "assistant") {
-            newDialogue[newDialogue.length - 1] = {
-              ...lastMsg,
-              content: lastMsg.content + part.message.content,
-            };
-          }
-          return newDialogue;
-        });
-      }
+      return
+      // const response = await ollama.chat({
+      //   // model: "gemma3:latest",
+      //   model: model,
+      //   messages: newMessages,
+      //   stream: true,
+      //   // think: true,
+      // });
+      // for await (const part of response) {
+      //   setDialogue((prev) => {
+      //     const newDialogue = [...prev];
+      //     const lastMsg = newDialogue[newDialogue.length - 1];
+      //     if (lastMsg.role === "assistant") {
+      //       newDialogue[newDialogue.length - 1] = {
+      //         ...lastMsg,
+      //         content: lastMsg.content + part.message.content,
+      //       };
+      //     }
+      //     return newDialogue;
+      //   });
+      // }
     },
     [dialogue, model],
   );
