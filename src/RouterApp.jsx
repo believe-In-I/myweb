@@ -13,6 +13,7 @@ import CanvasVirtualListPage from './pages/CanvasVirtualListPage'
 import TestView from './pages/testView'
 import AIChatPage from './pages/AIChatPage';
 import LLMAi from './pages/LLMAI'
+import MarkdownToMermaidPage from './pages/markdownToMermaid/index.tsx';
 import LanguageSwitcher from './components/LanguageSwitcher';
 
 
@@ -32,6 +33,7 @@ const routes = [
   { path: '/indexeddb-test', nameKey: 'menu.indexeddbTest', icon: <CodeOutlined /> },
   { path: '/test-view', nameKey: 'menu.testView', icon: <CodeOutlined /> },
   { path: '/llm-ai', nameKey: 'menu.llmAi', icon: <CodeOutlined /> },
+  { path: '/markdown-to-mermaid', nameKey: 'menu.markdownToMermaid', icon: <BarsOutlined /> },
 ];
 
 // 内容区域组件
@@ -71,6 +73,7 @@ const ContentArea = () => {
           <Route path="/indexeddb-test" element={<IndexedDBTestPage />} />
           <Route path="/test-view" element={<TestView />} />
           <Route path="/llm-ai" element={<LLMAi />} />
+          <Route path="/markdown-to-mermaid" element={<MarkdownToMermaidPage />} />
         </Routes>
       </div>
     

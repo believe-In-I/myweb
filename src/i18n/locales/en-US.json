@@ -12,7 +12,8 @@
     "canvasVirtualList": "Canvas Virtual List",
     "threejs": "ThreeJs",
     "indexeddbTest": "IndexedDB Test",
-    "testView": "Test View"
+    "testView": "Test View",
+    "markdownToMermaid": "Mermaid Chart"
   },
   "header": {
     "profile": "Profile",

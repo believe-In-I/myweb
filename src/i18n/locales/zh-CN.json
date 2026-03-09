@@ -12,7 +12,8 @@
     "canvasVirtualList": "Canvas 虚拟列表",
     "threejs": "ThreeJs",
     "indexeddbTest": "IndexedDB 测试",
-    "testView": "测试页面"
+    "testView": "测试页面",
+    "markdownToMermaid": "Mermaid 图表"
   },
   "header": {
     "profile": "个人中心",

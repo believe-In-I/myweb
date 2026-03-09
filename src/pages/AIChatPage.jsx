@@ -9,7 +9,7 @@ marked.use({ gfm: true });
 
 const { Text } = Typography;
 
-const apiBaseUrl = 'http://localhost:3001';
+const apiBaseUrl = 'https://api.niumashuai.top';
 
 const AI_CHAT_STORAGE_KEY = 'ai_chat_messages';
 
@@ -116,12 +116,13 @@ export default function AIChatPage() {
 
           try {
             const parsed = JSON.parse(data);
-            if (parsed.content) {
+            const content = parsed.choices?.[0]?.delta?.content || parsed.content;
+            if (content) {
               setMessages(prev => {
                 const newMessages = [...prev];
                 const lastMsg = newMessages[newMessages.length - 1];
                 if (lastMsg.role === 'assistant') {
-                  lastMsg.content += parsed.content;
+                  lastMsg.content += content;
                 }
                 return newMessages;
               });
