@@ -1,6 +1,6 @@
 // universal-markdown-to-mermaid.ts
 
-interface MarkdownParseResult {
+export interface MarkdownParseResult {
     title?: string;                  // 文档标题
     headings: Heading[];              // 所有标题
     lists: ListItem[];                // 所有列表项
@@ -10,32 +10,32 @@ interface MarkdownParseResult {
     frontmatter?: Record<string, any>; // YAML frontmatter
   }
   
-  interface Heading {
+  export interface Heading {
     level: number;      // 1-6
     text: string;
     id?: string;
     children: Heading[]; // 子标题
   }
   
-  interface ListItem {
+  export interface ListItem {
     level: number;      // 缩进层级
     text: string;
     ordered: boolean;   // 有序还是无序
     children: ListItem[];
   }
   
-  interface Table {
+  export interface Table {
     headers: string[];
     rows: string[][];
     caption?: string;
   }
   
-  interface Paragraph {
+  export interface Paragraph {
     text: string;
     sentences: string[];
   }
   
-  type ChartType = 
+  export type ChartType = 
     | 'mindmap'      // 思维导图（最适合标题层级）
     | 'flowchart'    // 流程图（适合流程描述）
     | 'graph'        // 关系图（适合实体关系）
@@ -47,7 +47,7 @@ interface MarkdownParseResult {
     | 'classDiagram'    // 类图（适合分类体系）
     | 'entityRelationshipDiagram'; // ER图（适合数据关系）
   
-  interface MermaidGenerationOptions {
+  export interface MermaidGenerationOptions {
     preferredChartType?: ChartType;   // 优先图表类型
     autoDetect: boolean;              // 是否自动检测最适合的图表
     maxDepth?: number;                 // 最大深度
