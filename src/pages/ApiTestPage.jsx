@@ -6,8 +6,8 @@ import { FolderOutlined, FileOutlined, DownloadOutlined, CopyOutlined, DeleteOut
 const { Title, Text } = Typography;
 
 const ApiTestPage = () => {
-  // 基础配置
-  const [apiBaseUrl, setApiBaseUrl] = useState('https://api.niumashuai.top');
+  // 基础配置  http://182.92.94.27:3001
+  const [apiBaseUrl, setApiBaseUrl] = useState('http://182.92.94.27:3001');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

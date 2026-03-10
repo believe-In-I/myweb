@@ -15,6 +15,8 @@ export interface MarkdownParseResult {
     text: string;
     id?: string;
     children: Heading[]; // 子标题
+    listItems: ListItem[]; // 属于该标题的列表项
+    tableIndices: number[]; // 属于该标题的表格索引
   }
   
   export interface ListItem {
@@ -36,7 +38,6 @@ export interface MarkdownParseResult {
   }
   
   export type ChartType = 
-    | 'mindmap'      // 思维导图（最适合标题层级）
     | 'flowchart'    // 流程图（适合流程描述）
     | 'graph'        // 关系图（适合实体关系）
     | 'timeline'     // 时间线（适合时间顺序）
@@ -52,6 +53,7 @@ export interface MarkdownParseResult {
     autoDetect: boolean;              // 是否自动检测最适合的图表
     maxDepth?: number;                 // 最大深度
     includeTextContent?: boolean;      // 是否包含正文内容
+    direction?: 'TD' | 'LR';           // 流程图方向
   }
   
   /**
@@ -66,7 +68,6 @@ export interface MarkdownParseResult {
     static parseMarkdown(markdown: string): MarkdownParseResult {
       // 处理literal \n 转换为真实换行
       markdown = markdown.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
-      console.log('Markdown after processing:', markdown);
       
       const lines = markdown.split('\n');
       const result: MarkdownParseResult = {
@@ -91,7 +92,9 @@ export interface MarkdownParseResult {
       let inTable = false;
       let inCodeBlock = false;
       let currentCodeBlock = '';
-      
+      let currentHeadingIndex = -1; // 追踪当前标题索引
+      let prevLine = ''; // 追踪上一行，用于检测新表格
+
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const trimmed = line.trim();
@@ -125,10 +128,14 @@ export interface MarkdownParseResult {
           if (match) {
             const level = match[1].length;
             const text = match[2];
+            const headingIndex = result.headings.length;
+            currentHeadingIndex = headingIndex;
             result.headings.push({
               level,
               text,
-              children: [] // 后面会构建树结构
+              children: [],
+              listItems: [],
+              tableIndices: []
             });
           }
         }
@@ -147,16 +154,30 @@ export interface MarkdownParseResult {
             ordered,
             children: []
           });
+
+          // 关联列表项到当前标题（顶级列表）
+          if (currentHeadingIndex >= 0 && indentLevel === 0) {
+            result.headings[currentHeadingIndex].listItems.push(result.lists[result.lists.length - 1]);
+          }
         }
         
         // 解析表格
         else if (trimmed.startsWith('|')) {
-          if (!inTable) {
+          // 检测是否是新表格开始：只有当 inTable 为 false 时，或者检测到可能是新表格的表头时
+          // 如果当前没有在表格中，或者遇到看起来像新表头的行（新表格前面通常有空行或非表格内容）
+          const isNewTableHeader = (inTable && prevLine !== undefined && !prevLine.startsWith('|'));
+
+          if (!inTable || isNewTableHeader) {
             inTable = true;
+            const tableIndex = result.tables.length;
             result.tables.push({
               headers: [],
               rows: []
             });
+            // 关联表格到当前标题
+            if (currentHeadingIndex >= 0) {
+              result.headings[currentHeadingIndex].tableIndices.push(tableIndex);
+            }
           }
           
           const cells = trimmed.split('|')
@@ -173,7 +194,7 @@ export interface MarkdownParseResult {
             currentTable.rows.push(cells);
           }
         }
-        
+
         // 解析普通段落
         else if (!inTable) {
           // 拆分成句子
@@ -185,8 +206,11 @@ export interface MarkdownParseResult {
             });
           }
         }
+
+        // 更新上一行
+        prevLine = trimmed;
       }
-      
+
       // 构建标题树（父子关系）
       this.buildHeadingTree(result.headings);
       
@@ -246,36 +270,36 @@ export interface MarkdownParseResult {
       // 检测是否有表格
       if (parsed.tables.length > 0) {
         const table = parsed.tables[0];
-        
+
         // 如果表格有数值型数据，适合饼图或象限图
         if (this.hasNumericData(table)) {
           return 'quadrantChart';
         }
-        
-        // 如果表格有分类和描述，适合思维导图
+
+        // 如果表格有分类和描述，适合流程图
         if (table.headers.length >= 2) {
-          return 'mindmap';
+          return 'flowchart';
         }
       }
-      
+
       // 检测是否有时间线内容
       if (this.hasTimelineContent(parsed)) {
         return 'timeline';
       }
-      
+
       // 检测是否有流程描述
       if (this.hasProcessDescription(parsed)) {
         return 'flowchart';
       }
-      
+
       // 检测标题层级深度
       const maxHeadingDepth = this.getMaxHeadingDepth(parsed.headings);
       if (maxHeadingDepth >= 2) {
-        return 'mindmap';
+        return 'flowchart';
       }
-      
-      // 默认返回思维导图
-      return 'mindmap';
+
+      // 默认返回流程图
+      return 'flowchart';
     }
     
     /**
@@ -286,7 +310,6 @@ export interface MarkdownParseResult {
       options: MermaidGenerationOptions = { autoDetect: true, includeTextContent: true }
     ): string {
       const parsed = this.parseMarkdown(markdown);
-      console.log('Parsed result:', JSON.stringify(parsed, null, 2));
       
       // 如果已有Mermaid代码块且用户想保留，可以直接返回
       if (parsed.existingMermaidBlocks.length > 0 && options.autoDetect) {
@@ -295,16 +318,13 @@ export interface MarkdownParseResult {
       }
       
       // 自动检测图表类型
-      const chartType = options.autoDetect 
+      const chartType = options.autoDetect
         ? this.detectBestChartType(parsed)
-        : (options.preferredChartType || 'mindmap');
-      
-      console.log('Chart type:', chartType);
-      
+        : (options.preferredChartType || 'flowchart');
+
+
       // 根据类型生成对应图表
       switch (chartType) {
-        case 'mindmap':
-          return this.generateMindmap(parsed, options);
         case 'flowchart':
           return this.generateFlowchart(parsed, options);
         case 'timeline':
@@ -318,7 +338,7 @@ export interface MarkdownParseResult {
         case 'entityRelationshipDiagram':
           return this.generateERDiagram(parsed, options);
         default:
-          return this.generateMindmap(parsed, options);
+          return this.generateFlowchart(parsed, options);
       }
     }
     
@@ -327,11 +347,6 @@ export interface MarkdownParseResult {
      */
     static generateMindmap(parsed: MarkdownParseResult, options: MermaidGenerationOptions): string {
       const lines: string[] = ['mindmap'];
-      
-      console.log('Generating mindmap, headings:', parsed.headings);
-      console.log('Generating mindmap, paragraphs:', parsed.paragraphs);
-      console.log('Generating mindmap, lists:', parsed.lists);
-      console.log('Generating mindmap, tables:', parsed.tables);
       
       // 获取文档标题
       let title = parsed.frontmatter?.title || 
@@ -427,18 +442,19 @@ export interface MarkdownParseResult {
         }
       }
       
-      console.log('Generated mindmap lines:', lines);
       return lines.join('\n');
     }
     
     /**
      * 生成流程图（适合流程描述）
+     * 支持正确的层级结构：根节点 -> 一级标题 -> 子标题/列表项/表格
      */
     static generateFlowchart(parsed: MarkdownParseResult, options: MermaidGenerationOptions): string {
-      const lines: string[] = ['graph TD'];
-      
+      const direction = options.direction || 'TD';
+      const lines: string[] = [`graph ${direction}`];
+
       const usedIds = new Set<string>();
-      
+
       const getNodeId = (text: string): string => {
         let baseId = this.escapeNodeId(text.substring(0, 15));
         let id = baseId;
@@ -449,92 +465,83 @@ export interface MarkdownParseResult {
         usedIds.add(id);
         return id;
       };
-      
-      // 获取文档标题（第一行或第一个一级标题）
-      const docTitle = parsed.frontmatter?.title || 
-                       parsed.headings.find(h => h.level === 1)?.text || 
+
+      // 获取文档标题
+      const docTitle = parsed.frontmatter?.title ||
+                       parsed.headings.find(h => h.level === 1)?.text ||
                        '文档';
       const rootId = getNodeId(docTitle);
       lines.push(`    ${rootId}["${this.escape(docTitle)}"]`);
-      
-      let prevId = rootId;
-      
-      // 添加一级标题作为主要流程节点
+
+      // 辅助函数：渲染标题及其所有内容
+      const renderHeading = (heading: Heading, parentId: string) => {
+        const hId = getNodeId(heading.text.substring(0, 12));
+        lines.push(`    ${hId}["${this.escape(heading.text.substring(0, 15))}"]`);
+        lines.push(`    ${parentId} --> ${hId}`);
+
+        // 渲染该标题下的顶级列表项
+        if (options.includeTextContent && heading.listItems) {
+          for (const listItem of heading.listItems) {
+            const listId = getNodeId(listItem.text.substring(0, 10));
+            lines.push(`    ${listId}["${this.escape(listItem.text.substring(0, 25))}"]`);
+            lines.push(`    ${hId} --> ${listId}`);
+          }
+        }
+
+        // 渲染该标题关联的表格
+        if (options.includeTextContent && heading.tableIndices) {
+          for (const tableIdx of heading.tableIndices) {
+            const table = parsed.tables[tableIdx];
+            if (table && table.rows.length > 0) {
+              const tableId = getNodeId(heading.text.substring(0, 8) + '_' + tableIdx);
+              lines.push(`    ${tableId}["${this.escape(heading.text.substring(0, 12))}"]`);
+              lines.push(`    ${hId} --> ${tableId}`);
+
+              // 表格每行作为独立节点（限制最多8行）
+              for (let rowIdx = 0; rowIdx < Math.min(table.rows.length, 8); rowIdx++) {
+                const row = table.rows[rowIdx];
+                if (row.length >= 1) {
+                  const rowTitle = row[0].substring(0, 12);
+                  const rowId = getNodeId('r' + tableIdx + '_' + rowIdx);
+                  lines.push(`    ${rowId}["${this.escape(rowTitle)}"]`);
+                  lines.push(`    ${tableId} --> ${rowId}`);
+                }
+              }
+            }
+          }
+        }
+
+        // 递归渲染子标题
+        if (heading.children && heading.children.length > 0) {
+          for (const child of heading.children) {
+            renderHeading(child, hId);
+          }
+        }
+      };
+
+      // 渲染一级标题及其所有内容
+      // 只使用第一个一级标题（它应该已经包含所有子标题）
       const h1Headings = parsed.headings.filter(h => h.level === 1);
       if (h1Headings.length > 0) {
+        // 使用第一个一级标题作为根，它应该包含所有子标题
+        const rootHeading = h1Headings[0];
+        renderHeading(rootHeading, rootId);
+
+        // 如果有其他独立的一级标题（不在第一个的children里），也渲染它们
+        const rootChildrenTexts = new Set(rootHeading.children?.map(h => h.text) || []);
         for (const h1 of h1Headings) {
-          const h1Id = getNodeId(h1.text);
-          lines.push(`    ${h1Id}["${this.escape(h1.text)}"]`);
-          lines.push(`    ${prevId} --> ${h1Id}`);
-          prevId = h1Id;
-          
-          // 添加二级标题
-          for (const h2 of h1.children) {
-            const h2Id = getNodeId(h2.text);
-            lines.push(`    ${h2Id}["${this.escape(h2.text)}"]`);
-            lines.push(`    ${h1Id} --> ${h2Id}`);
+          if (h1 !== rootHeading && !rootChildrenTexts.has(h1.text)) {
+            renderHeading(h1, rootId);
           }
         }
       } else {
         // 没有一级标题时，使用二级标题
         const h2Headings = parsed.headings.filter(h => h.level === 2);
         for (const h2 of h2Headings) {
-          const h2Id = getNodeId(h2.text);
-          lines.push(`    ${h2Id}["${this.escape(h2.text)}"]`);
-          lines.push(`    ${prevId} --> ${h2Id}`);
-          prevId = h2Id;
+          renderHeading(h2, rootId);
         }
       }
-      
-      // 添加段落作为说明节点（跳过代码块）
-      if (parsed.paragraphs.length > 0 && options.includeTextContent) {
-        const textParagraphs = parsed.paragraphs.filter(p => !p.text.includes('```'));
-        if (textParagraphs.length > 0) {
-          const paraText = textParagraphs[0].text.substring(0, 50);
-          const paraId = getNodeId('说明');
-          lines.push(`    ${paraId}("${this.escape(paraText)}")`);
-          lines.push(`    ${prevId} -.-> ${paraId}`);
-        }
-      }
-      
-      // 添加表格数据作为详细节点
-      if (parsed.tables.length > 0) {
-        const table = parsed.tables[0];
-        const tableId = getNodeId('数据表格');
-        lines.push(`    ${tableId}[${table.caption || '数据对比'}]`);
-        
-        // 连接最后一个节点到表格
-        if (prevId !== rootId) {
-          lines.push(`    ${prevId} --> ${tableId}`);
-        } else {
-          lines.push(`    ${rootId} --> ${tableId}`);
-        }
-        
-        // 添加表格行作为子节点
-        for (const row of table.rows) {
-          if (row.length >= 1) {
-            const rowId = getNodeId(row[0]);
-            // 使用圆角矩形显示美食名称
-            lines.push(`    ${rowId}("${this.escape(row[0])}")`);
-            lines.push(`    ${tableId} --> ${rowId}`);
-            
-            // 如果有口味特点，添加为子节点
-            if (row.length >= 2 && row[1]) {
-              const tasteId = getNodeId(`${row[0]}_taste`);
-              lines.push(`    ${tasteId}[${this.escape(row[1])}]`);
-              lines.push(`    ${rowId} --> ${tasteId}`);
-            }
-            
-            // 如果有地域信息
-            if (row.length >= 3 && row[2]) {
-              const regionId = getNodeId(`${row[0]}_region`);
-              lines.push(`    ${regionId}[📍 ${this.escape(row[2])}]`);
-              lines.push(`    ${rowId} --> ${regionId}`);
-            }
-          }
-        }
-      }
-      
+
       return lines.join('\n');
     }
     

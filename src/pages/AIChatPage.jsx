@@ -9,7 +9,7 @@ marked.use({ gfm: true });
 
 const { Text } = Typography;
 
-const apiBaseUrl = 'https://api.niumashuai.top';
+const apiBaseUrl = 'http://182.92.94.27:3001';
 
 const AI_CHAT_STORAGE_KEY = 'ai_chat_messages';
 
