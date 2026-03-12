@@ -27,18 +27,10 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://100.74.18.46:5173/',
+        target: 'https://api.niumashuai.top/',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       },
-      '/ollama': {
-        target: 'http://localhost:11434',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/ollama/, ''),
-        headers: {
-          'Origin': 'http://localhost:11434'
-        }
-      }
     }
   }
 })

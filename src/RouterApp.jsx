@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
-import { Layout, Menu, Breadcrumb, Typography, Avatar, Dropdown, Space, ConfigProvider } from 'antd';
+import { Layout, Menu, Breadcrumb, Typography, Avatar, Dropdown, Space, ConfigProvider, App } from 'antd';
 import { HomeOutlined, CodeOutlined, LineChartOutlined, HistoryOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined, LoadingOutlined, RobotOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import ApiTestPage from './pages/ApiTestPage';
@@ -14,6 +14,7 @@ import TestView from './pages/testView'
 import AIChatPage from './pages/AIChatPage';
 import LLMAi from './pages/LLMAI'
 import MarkdownToMermaidPage from './pages/markdownToMermaid/index.tsx';
+import MarkdownPreviewPage from './pages/markdownPreview/index.tsx';
 import LanguageSwitcher from './components/LanguageSwitcher';
 
 
@@ -34,6 +35,7 @@ const routes = [
   { path: '/test-view', nameKey: 'menu.testView', icon: <CodeOutlined /> },
   { path: '/llm-ai', nameKey: 'menu.llmAi', icon: <CodeOutlined /> },
   { path: '/markdown-to-mermaid', nameKey: 'menu.markdownToMermaid', icon: <BarsOutlined /> },
+  { path: '/markdown-preview', nameKey: 'menu.markdownPreview', icon: <BarsOutlined /> },
 ];
 
 // 内容区域组件
@@ -53,12 +55,10 @@ const ContentArea = () => {
       }}
     >
       {/* 面包屑导航 */}
-      <Breadcrumb style={{ marginBottom: 24 }}>
-        <Breadcrumb.Item>{t('breadCrumb.home')}</Breadcrumb.Item>
-        <Breadcrumb.Item>
-          {t(routes.find(route => route.path === location.pathname)?.nameKey || 'breadCrumb.unknown')}
-        </Breadcrumb.Item>
-      </Breadcrumb>
+      <Breadcrumb style={{ marginBottom: 24 }} items={[
+        { title: t('breadCrumb.home') },
+        { title: t(routes.find(route => route.path === location.pathname)?.nameKey || 'breadCrumb.unknown') },
+      ]} />
       
       {/* 页面内容 */}
       <div style={{height:'calc(100vh - 220px)',overflow:'auto'}}>
@@ -74,6 +74,7 @@ const ContentArea = () => {
           <Route path="/test-view" element={<TestView />} />
           <Route path="/llm-ai" element={<LLMAi />} />
           <Route path="/markdown-to-mermaid" element={<MarkdownToMermaidPage />} />
+          <Route path="/markdown-preview" element={<MarkdownPreviewPage />} />
         </Routes>
       </div>
     
@@ -202,16 +203,18 @@ export default function RouterApp() {
           },
         }}
       >
-        <Layout style={{ minHeight: '100vh' }}>
-          {/* 侧边栏 */}
-          <Sidebar />
-          <Layout style={{ flex: 1 }}>
-            {/* 顶部栏 */}
-            <TopHeader />
-            {/* 内容区域 */}
-            <ContentArea />
+        <App>
+          <Layout style={{ minHeight: '100vh' }}>
+            {/* 侧边栏 */}
+            <Sidebar />
+            <Layout style={{ flex: 1 }}>
+              {/* 顶部栏 */}
+              <TopHeader />
+              {/* 内容区域 */}
+              <ContentArea />
+            </Layout>
           </Layout>
-        </Layout>
+        </App>
       </ConfigProvider>
     </BrowserRouter>
   );

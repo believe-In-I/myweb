@@ -1,8 +1,12 @@
 import axios from 'axios';
 
+// 开发环境使用代理，生产环境使用完整 URL
+const isDev = import.meta.env.DEV;
+const baseURL = isDev ? '/api' : 'https://api.niumashuai.top';
+
 // 创建 axios 实例
 const request = axios.create({
-  baseURL: '/api', // 基础 URL，使用代理
+  baseURL, // 开发环境用代理，生产用完整URL
   timeout: 10000, // 请求超时时间
   headers: {
     'Content-Type': 'application/json'

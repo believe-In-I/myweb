@@ -7,7 +7,7 @@ const { Title, Text } = Typography;
 
 const ApiTestPage = () => {
   // 基础配置  http://182.92.94.27:3001
-  const [apiBaseUrl, setApiBaseUrl] = useState('http://182.92.94.27:3001');
+  const [apiBaseUrl, setApiBaseUrl] = useState('https://api.niumashuai.top');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

@@ -13,7 +13,8 @@
     "threejs": "ThreeJs",
     "indexeddbTest": "IndexedDB 测试",
     "testView": "测试页面",
-    "markdownToMermaid": "Mermaid 图表"
+    "markdownToMermaid": "Mermaid 图表",
+    "markdownPreview": "Markdown 预览"
   },
   "header": {
     "profile": "个人中心",

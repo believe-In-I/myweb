@@ -13,7 +13,8 @@
     "threejs": "ThreeJs",
     "indexeddbTest": "IndexedDB Test",
     "testView": "Test View",
-    "markdownToMermaid": "Mermaid Chart"
+    "markdownToMermaid": "Mermaid Chart",
+    "markdownPreview": "Markdown Preview"
   },
   "header": {
     "profile": "Profile",
