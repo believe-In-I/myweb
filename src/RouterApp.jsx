@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom';
-import { Layout, Menu, Breadcrumb, Typography, Avatar, Dropdown, Space, ConfigProvider, App } from 'antd';
+import { BrowserRouter, Routes, Route, NavLink, useLocation, useNavigate, Navigate, Outlet } from 'react-router-dom';
+import { Layout, Menu, Breadcrumb, Typography, Avatar, Dropdown, Space, ConfigProvider, App, Button, message } from 'antd';
 import { HomeOutlined, CodeOutlined, LineChartOutlined, HistoryOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined, LoadingOutlined, RobotOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import ApiTestPage from './pages/ApiTestPage';
@@ -16,6 +16,9 @@ import LLMAi from './pages/LLMAI'
 import MarkdownToMermaidPage from './pages/markdownToMermaid/index.tsx';
 import MarkdownPreviewPage from './pages/markdownPreview/index.tsx';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import LoginPage from './pages/LoginPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import { logout, isAuthenticated, getUser } from './utils/auth';
 
 
 
@@ -24,25 +27,25 @@ const { Title } = Typography;
 
 // 路由配置
 const routes = [
-  { path: '/', nameKey: 'menu.apiTest', icon: <HomeOutlined /> },
-  { path: '/ai-chat', nameKey: 'menu.aiChat', icon: <RobotOutlined /> },
-  { path: '/g6-dagre', nameKey: 'menu.g6Relation', icon: <LineChartOutlined /> },
-  { path: '/update-history', nameKey: 'menu.updateHistory', icon: <HistoryOutlined /> },
-  { path: '/virtual-scroll', nameKey: 'menu.virtualScroll', icon: <BarsOutlined /> },
-  { path: '/canvas-virtual-list', nameKey: 'menu.canvasVirtualList', icon: <BarsOutlined /> },
-  { path: '/threejs', nameKey: 'menu.threejs', icon: <BarsOutlined /> },
-  { path: '/indexeddb-test', nameKey: 'menu.indexeddbTest', icon: <CodeOutlined /> },
-  { path: '/test-view', nameKey: 'menu.testView', icon: <CodeOutlined /> },
-  { path: '/llm-ai', nameKey: 'menu.llmAi', icon: <CodeOutlined /> },
-  { path: '/markdown-to-mermaid', nameKey: 'menu.markdownToMermaid', icon: <BarsOutlined /> },
-  { path: '/markdown-preview', nameKey: 'menu.markdownPreview', icon: <BarsOutlined /> },
+  { path: '/home/apiTest', nameKey: 'menu.apiTest', icon: <HomeOutlined /> },
+  { path: '/home/ai-chat', nameKey: 'menu.aiChat', icon: <RobotOutlined /> },
+  { path: '/home/g6-dagre', nameKey: 'menu.g6Relation', icon: <LineChartOutlined /> },
+  { path: '/home/update-history', nameKey: 'menu.updateHistory', icon: <HistoryOutlined /> },
+  { path: '/home/virtual-scroll', nameKey: 'menu.virtualScroll', icon: <BarsOutlined /> },
+  { path: '/home/canvas-virtual-list', nameKey: 'menu.canvasVirtualList', icon: <BarsOutlined /> },
+  { path: '/home/threejs', nameKey: 'menu.threejs', icon: <BarsOutlined /> },
+  { path: '/home/indexeddb-test', nameKey: 'menu.indexeddbTest', icon: <CodeOutlined /> },
+  { path: '/home/test-view', nameKey: 'menu.testView', icon: <CodeOutlined /> },
+  { path: '/home/llm-ai', nameKey: 'menu.llmAi', icon: <CodeOutlined /> },
+  { path: '/home/markdown-to-mermaid', nameKey: 'menu.markdownToMermaid', icon: <BarsOutlined /> },
+  { path: '/home/markdown-preview', nameKey: 'menu.markdownPreview', icon: <BarsOutlined /> },
 ];
 
 // 内容区域组件
 const ContentArea = () => {
   const location = useLocation();
   const { t } = useTranslation();
-  
+
   return (
     <Content
       style={{
@@ -59,25 +62,12 @@ const ContentArea = () => {
         { title: t('breadCrumb.home') },
         { title: t(routes.find(route => route.path === location.pathname)?.nameKey || 'breadCrumb.unknown') },
       ]} />
-      
+
       {/* 页面内容 */}
       <div style={{height:'calc(100vh - 220px)',overflow:'auto'}}>
-        <Routes>
-          <Route path="/" element={<ApiTestPage />} />
-          <Route path="/ai-chat" element={<AIChatPage />} />
-          <Route path="/update-history" element={<UpdateHistoryPage />} />
-          <Route path="/g6-dagre" element={<G6RelationGraphPage />} />
-          <Route path="/virtual-scroll" element={<VirtualScrollPage />} />
-          <Route path="/canvas-virtual-list" element={<CanvasVirtualListPage />} />
-          <Route path="/threejs" element={<ThreeJs />} />
-          <Route path="/indexeddb-test" element={<IndexedDBTestPage />} />
-          <Route path="/test-view" element={<TestView />} />
-          <Route path="/llm-ai" element={<LLMAi />} />
-          <Route path="/markdown-to-mermaid" element={<MarkdownToMermaidPage />} />
-          <Route path="/markdown-preview" element={<MarkdownPreviewPage />} />
-        </Routes>
+        <Outlet />
       </div>
-    
+
     </Content>
   );
 };
@@ -137,6 +127,15 @@ const Sidebar = () => {
 // 顶部栏组件
 const TopHeader = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const user = getUser();
+  
+  const handleLogout = () => {
+    logout();
+    message.success('已退出登录');
+    navigate('/login');
+  };
+  
   const menu = [
     {
       key: '1',
@@ -161,6 +160,7 @@ const TopHeader = () => {
           <LogoutOutlined /> {t('header.logout')}
         </span>
       ),
+      onClick: handleLogout,
     },
   ];
   
@@ -182,13 +182,35 @@ const TopHeader = () => {
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         <Space size="middle">
           <LanguageSwitcher />
-          <span style={{ color: '#666' }}>{t('header.admin')}</span>
+          <span style={{ color: '#666' }}>{user?.username || t('header.admin')}</span>
           <Dropdown menu={{ items: menu }}>
             <Avatar size="small" icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
           </Dropdown>
         </Space>
       </div>
     </Header>
+  );
+};
+
+// 主应用布局组件
+const MainLayout = () => {
+  const auth = isAuthenticated();
+
+  if (!auth) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return (
+    <Layout style={{ minHeight: '100vh' }}>
+      {/* 侧边栏 */}
+      <Sidebar />
+      <Layout style={{ flex: 1 }}>
+        {/* 顶部栏 */}
+        <TopHeader />
+        {/* 内容区域 */}
+        <ContentArea />
+      </Layout>
+    </Layout>
   );
 };
 
@@ -204,16 +226,73 @@ export default function RouterApp() {
         }}
       >
         <App>
-          <Layout style={{ minHeight: '100vh' }}>
-            {/* 侧边栏 */}
-            <Sidebar />
-            <Layout style={{ flex: 1 }}>
-              {/* 顶部栏 */}
-              <TopHeader />
-              {/* 内容区域 */}
-              <ContentArea />
-            </Layout>
-          </Layout>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Navigate to="/home/apiTest" replace />} />
+              <Route path="/home" element={<Navigate to="/home/apiTest" replace />} />
+              <Route path="/home/apiTest" element={
+                <ProtectedRoute>
+                  <ApiTestPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/ai-chat" element={
+                <ProtectedRoute>
+                  <AIChatPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/update-history" element={
+                <ProtectedRoute>
+                  <UpdateHistoryPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/g6-dagre" element={
+                <ProtectedRoute>
+                  <G6RelationGraphPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/virtual-scroll" element={
+                <ProtectedRoute>
+                  <VirtualScrollPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/canvas-virtual-list" element={
+                <ProtectedRoute>
+                  <CanvasVirtualListPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/threejs" element={
+                <ProtectedRoute>
+                  <ThreeJs />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/indexeddb-test" element={
+                <ProtectedRoute>
+                  <IndexedDBTestPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/test-view" element={
+                <ProtectedRoute>
+                  <TestView />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/llm-ai" element={
+                <ProtectedRoute>
+                  <LLMAi />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/markdown-to-mermaid" element={
+                <ProtectedRoute>
+                  <MarkdownToMermaidPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/markdown-preview" element={
+                <ProtectedRoute>
+                  <MarkdownPreviewPage />
+                </ProtectedRoute>
+              } />
+            </Route>
+          </Routes>
         </App>
       </ConfigProvider>
     </BrowserRouter>

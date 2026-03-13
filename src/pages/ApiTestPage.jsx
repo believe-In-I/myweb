@@ -5,6 +5,17 @@ import { FolderOutlined, FileOutlined, DownloadOutlined, CopyOutlined, DeleteOut
 
 const { Title, Text } = Typography;
 
+// 允许的图片 MIME 类型（后端设置）
+const ALLOWED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'image/svg+xml',
+  'image/bmp',
+  'image/tiff'
+];
+
 const ApiTestPage = () => {
   // 基础配置  http://182.92.94.27:3001
   const [apiBaseUrl, setApiBaseUrl] = useState('https://api.niumashuai.top');
@@ -226,6 +237,12 @@ const ApiTestPage = () => {
 
   // 文件上传处理
   const handleFileUpload = async (file) => {
+    // 校验文件类型
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      message.error('只允许上传图片文件（jpeg, png, gif, webp, svg, bmp, tiff）');
+      return Upload.LIST_IGNORE;
+    }
+
     setLoading(true);
     setError(null);
     setUploadResult(null);
