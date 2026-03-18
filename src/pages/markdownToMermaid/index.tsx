@@ -86,7 +86,7 @@ export default function MarkdownToMermaidPage() {
             <MermaidPreview
               key={refreshKey}
               markdown={markdown}
-              orientation={direction}
+              direction={direction}
               showCode={true}
             />
           </div>
