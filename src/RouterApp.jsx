@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, NavLink, useLocation, useNavigate, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Routes, Route, NavLink, useLocation, useNavigate, Navigate, Outlet } from 'react-router-dom';
 import { Layout, Menu, Breadcrumb, Typography, Avatar, Dropdown, Space, ConfigProvider, App, Button, message } from 'antd';
 import { HomeOutlined, CodeOutlined, LineChartOutlined, HistoryOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined, LoadingOutlined, RobotOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -10,11 +10,10 @@ import VirtualScrollPage from './pages/VirtualScrollPage';
 import ThreeJs from '@/pages/threeJs';
 import IndexedDBTestPage from './pages/IndexedDBTestPage';
 import CanvasVirtualListPage from './pages/CanvasVirtualListPage'
-import TestView from './pages/testView'
 import AIChatPage from './pages/AIChatPage';
-import LLMAi from './pages/LLMAI'
 import MarkdownToMermaidPage from './pages/markdownToMermaid/index.tsx';
 import MarkdownPreviewPage from './pages/markdownPreview/index.tsx';
+import FeishuEditorPage from './pages/FeishuEditor';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -35,10 +34,9 @@ const routes = [
   { path: '/home/canvas-virtual-list', nameKey: 'menu.canvasVirtualList', icon: <BarsOutlined /> },
   { path: '/home/threejs', nameKey: 'menu.threejs', icon: <BarsOutlined /> },
   { path: '/home/indexeddb-test', nameKey: 'menu.indexeddbTest', icon: <CodeOutlined /> },
-  { path: '/home/test-view', nameKey: 'menu.testView', icon: <CodeOutlined /> },
-  { path: '/home/llm-ai', nameKey: 'menu.llmAi', icon: <CodeOutlined /> },
   { path: '/home/markdown-to-mermaid', nameKey: 'menu.markdownToMermaid', icon: <BarsOutlined /> },
   { path: '/home/markdown-preview', nameKey: 'menu.markdownPreview', icon: <BarsOutlined /> },
+  { path: '/home/feishu-editor', nameKey: 'menu.feishuEditor', icon: <BarsOutlined /> },
 ];
 
 // 内容区域组件
@@ -216,7 +214,7 @@ const MainLayout = () => {
 
 export default function RouterApp() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <ConfigProvider
         theme={{
           token: {
@@ -271,16 +269,8 @@ export default function RouterApp() {
                   <IndexedDBTestPage />
                 </ProtectedRoute>
               } />
-              <Route path="/home/test-view" element={
-                <ProtectedRoute>
-                  <TestView />
-                </ProtectedRoute>
-              } />
-              <Route path="/home/llm-ai" element={
-                <ProtectedRoute>
-                  <LLMAi />
-                </ProtectedRoute>
-              } />
+             
+
               <Route path="/home/markdown-to-mermaid" element={
                 <ProtectedRoute>
                   <MarkdownToMermaidPage />
@@ -291,10 +281,15 @@ export default function RouterApp() {
                   <MarkdownPreviewPage />
                 </ProtectedRoute>
               } />
+              <Route path="/home/feishu-editor" element={
+                <ProtectedRoute>
+                  <FeishuEditorPage />
+                </ProtectedRoute>
+              } />
             </Route>
           </Routes>
         </App>
       </ConfigProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }

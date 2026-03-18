@@ -14,7 +14,8 @@
     "indexeddbTest": "IndexedDB Test",
     "testView": "Test View",
     "markdownToMermaid": "Mermaid Chart",
-    "markdownPreview": "Markdown Preview"
+    "markdownPreview": "Markdown Preview",
+    "feishuEditor": "Rich Text Editor"
   },
   "header": {
     "profile": "Profile",

@@ -5,7 +5,7 @@ $body = @{
 } | ConvertTo-Json
 
 try {
-    $response = Invoke-WebRequest -Uri 'http://localhost:3001/api/ai/chat' -Method Post -Body $body -ContentType 'application/json' -TimeoutSec 30
+    $response = Invoke-WebRequest -Uri 'https://api.niumashuai.top/api/ai/chat' -Method Post -Body $body -ContentType 'application/json' -TimeoutSec 30
     $response.Content
 } catch {
     Write-Host "Status Code: $($_.Exception.Response.StatusCode)"

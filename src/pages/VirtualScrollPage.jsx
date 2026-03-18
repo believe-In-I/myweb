@@ -225,7 +225,7 @@ export default function VirtualScrollPage() {
             alignItems: 'center', 
             height: '100%' 
           }}>
-            <Spin size="large" tip="加载数据中..." />
+            <Spin size="large" description="加载数据中..." />
           </div>
         ) : (
           <div ref={contentRef} style={contentStyle}>

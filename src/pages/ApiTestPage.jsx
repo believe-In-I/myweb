@@ -453,14 +453,14 @@ const ApiTestPage = () => {
 
       {/* API Base URL配置 */}
       <Card title="配置" style={{ marginBottom: 20 }}>
-        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+        <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
           <div>
             <Text strong>API地址:</Text>
             <Input
               value={apiBaseUrl}
               onChange={(e) => setApiBaseUrl(e.target.value)}
               style={{ marginLeft: 10, width: 300 }}
-              placeholder="http://localhost:3001"
+              placeholder="https://api.niumashuai.top"
             />
           </div>
 
@@ -473,7 +473,7 @@ const ApiTestPage = () => {
       {/* 错误信息 */}
       {error && (
         <Alert
-          message="操作失败"
+          title="操作失败"
           description={error}
           type="error"
           showIcon
@@ -532,13 +532,13 @@ const ApiTestPage = () => {
         }
       >
         {loading && dirList.length === 0 && fileList.length === 0 ? (
-          <Spin tip="加载中...">
+          <Spin description="加载中...">
             <div style={{ padding: 50, background: '#fafafa' }} />
           </Spin>
         ) : dirList.length === 0 && fileList.length === 0 ? (
           <Empty description="当前目录为空" />
         ) : (
-          <Space direction="vertical" style={{ width: '100%' }} size="large">
+          <Space orientation="vertical" style={{ width: '100%' }} size="large">
             {/* 目录列表 */}
             {dirList.length > 0 && (
               <div>
@@ -577,7 +577,7 @@ const ApiTestPage = () => {
       {/* 上传结果 */}
       {uploadResult && (
         <Card title="上传结果" style={{ marginBottom: 20 }}>
-          <Space direction="vertical" style={{ width: '100%' }}>
+          <Space orientation="vertical" style={{ width: '100%' }}>
             <div>
               <Text strong>文件URL:</Text>
               <div style={{ marginTop: 5, wordBreak: 'break-all' }}>

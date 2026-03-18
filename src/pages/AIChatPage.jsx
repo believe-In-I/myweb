@@ -38,6 +38,7 @@ export default function AIChatPage() {
   const [abortController, setAbortController] = useState(null);
   const messagesEndRef = useRef(null);
 
+  const inputRef = useRef(null);
   // 缓存消息到 localStorage
   useEffect(() => {
     try {
@@ -66,6 +67,7 @@ export default function AIChatPage() {
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setLoading(true);
+    inputRef.current?.focus();
 
     const controller = new AbortController();
     setAbortController(controller);
@@ -265,6 +267,7 @@ export default function AIChatPage() {
         <div style={{ padding: '16px', background: '#fff', borderTop: '1px solid #f0f0f0' }}>
           <Space.Compact style={{ width: '100%' }}>
             <Input
+              ref={inputRef}
               placeholder="输入你想问的问题..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
