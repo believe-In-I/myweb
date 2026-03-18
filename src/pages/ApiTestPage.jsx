@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Card, Button, Upload, Typography, Alert, Spin, Space, Input, Table, Popconfirm, message, Tag, Breadcrumb, Modal, Form, Tooltip, Empty } from 'antd';
 import { FolderOutlined, FileOutlined, DownloadOutlined, CopyOutlined, DeleteOutlined, PlusOutlined, HomeOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { healthCheck, ossList, ossDelete, ossDeleteDir, ossDownloadUrl, ossCreateDir, ossUpload } from '@/api';
 
 const { Title, Text } = Typography;
 
@@ -17,8 +17,7 @@ const ALLOWED_IMAGE_TYPES = [
 ];
 
 const ApiTestPage = () => {
-  // 基础配置  http://182.92.94.27:3001
-  const [apiBaseUrl, setApiBaseUrl] = useState('https://api.niumashuai.top');
+  // const apiBaseUrl = 'https://api.niumashuai.top';
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -44,20 +43,19 @@ const ApiTestPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const url = `${apiBaseUrl}/api/oss/list?prefix=${encodeURIComponent(currentPath)}`;
-      console.log('获取文件列表:', url); // 调试日志
+      console.log('获取文件列表, prefix:', currentPath);
 
-      const response = await axios.get(url);
-      console.log('文件列表响应:', response.data); // 调试日志
+      const response = await ossList(currentPath);
+      console.log('文件列表响应:', response.data);
 
-      if (response.data.status === 'success') {
-        setDirList(response.data.data.directories || []);
-        setFileList(response.data.data.files || []);
+      if (response.status === 'success') {
+        setDirList(response.data.directories || []);
+        setFileList(response.data.files || []);
       } else {
-        setError(response.data.message || '获取文件列表失败');
+        setError(response.message || '获取文件列表失败');
       }
     } catch (err) {
-      console.error('获取文件列表失败:', err); // 调试日志
+      console.error('获取文件列表失败:', err);
       setError(`获取文件列表失败: ${err.message}`);
     } finally {
       setLoading(false);
@@ -69,7 +67,7 @@ const ApiTestPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`${apiBaseUrl}/api/health`);
+      const response = await healthCheck();
       setHealthData(response.data);
     } catch (err) {
       setError(`健康检查失败: ${err.message}`);
@@ -85,7 +83,7 @@ const ApiTestPage = () => {
 
   useEffect(() => {
     fetchFileList();
-  }, [apiBaseUrl, currentPath, refreshKey]);
+  }, [currentPath, refreshKey]);
 
   // 手动刷新列表
   const handleRefresh = () => {
@@ -136,14 +134,12 @@ const ApiTestPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.delete(`${apiBaseUrl}/api/oss/delete`, {
-        data: { key }
-      });
-      if (response.data.status === 'success') {
+      const response = await ossDelete(key);
+      if (response.status === 'success') {
         message.success('文件删除成功');
         fetchFileList();
       } else {
-        setError(response.data.message || '删除文件失败');
+        setError(response.message || '删除文件失败');
       }
     } catch (err) {
       setError(`删除文件失败: ${err.message}`);
@@ -157,14 +153,12 @@ const ApiTestPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.delete(`${apiBaseUrl}/api/oss/delete-dir`, {
-        data: { key }
-      });
-      if (response.data.status === 'success') {
-        message.success(`目录删除成功，删除了 ${response.data.data.deletedCount} 个文件`);
+      const response = await ossDeleteDir(key);
+      if (response.status === 'success') {
+        message.success(`目录删除成功，删除了 ${response.data.deletedCount} 个文件`);
         fetchFileList();
       } else {
-        setError(response.data.message || '删除目录失败');
+        setError(response.message || '删除目录失败');
       }
     } catch (err) {
       setError(`删除目录失败: ${err.message}`);
@@ -177,18 +171,17 @@ const ApiTestPage = () => {
   const handleDownload = async (key) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${apiBaseUrl}/api/oss/download-url?key=${encodeURIComponent(key)}`);
-      if (response.data.status === 'success') {
-        // 创建下载链接并触发下载
+      const response = await ossDownloadUrl(key);
+      if (response.status === 'success') {
         const link = document.createElement('a');
-        link.href = response.data.data.url;
+        link.href = response.data.url;
         link.download = key.split('/').pop();
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         message.success('开始下载');
       } else {
-        message.error(response.data.message || '获取下载链接失败');
+        message.error(response.message || '获取下载链接失败');
       }
     } catch (err) {
       message.error(`下载失败: ${err.message}`);
@@ -200,12 +193,12 @@ const ApiTestPage = () => {
   // 复制链接
   const handleCopyLink = async (key) => {
     try {
-      const response = await axios.get(`${apiBaseUrl}/api/oss/download-url?key=${encodeURIComponent(key)}`);
-      if (response.data.status === 'success') {
-        await navigator.clipboard.writeText(response.data.data.url);
+      const response = await ossDownloadUrl(key);
+      if (response.status === 'success') {
+        await navigator.clipboard.writeText(response.data.url);
         message.success('链接已复制到剪贴板');
       } else {
-        message.error(response.data.message || '获取链接失败');
+        message.error(response.message || '获取链接失败');
       }
     } catch (err) {
       message.error(`复制失败: ${err.message}`);
@@ -216,17 +209,14 @@ const ApiTestPage = () => {
   const handleCreateDir = async (values) => {
     setCreateDirLoading(true);
     try {
-      const response = await axios.post(`${apiBaseUrl}/api/oss/create-dir`, {
-        dirName: values.dirName,
-        parentPath: currentPath
-      });
-      if (response.data.status === 'success') {
+      const response = await ossCreateDir(values.dirName, currentPath);
+      if (response.status === 'success') {
         message.success('目录创建成功');
         setCreateDirModalVisible(false);
         form.resetFields();
         fetchFileList();
       } else {
-        message.error(response.data.message || '创建目录失败');
+        message.error(response.message || '创建目录失败');
       }
     } catch (err) {
       message.error(`创建目录失败: ${err.message}`);
@@ -256,17 +246,13 @@ const ApiTestPage = () => {
       const ossKey = `${currentPath}${Date.now()}-${fileName}`;
       formData.append('key', ossKey);
 
-      console.log('上传文件到:', ossKey); // 调试日志
+      console.log('上传文件到:', ossKey);
 
-      const response = await axios.post(`${apiBaseUrl}/api/oss/upload`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      const response = await ossUpload(formData);
 
       console.log('上传响应:', response.data); // 调试日志
 
-      setUploadResult(response.data.data);
+      setUploadResult(response.data);
       message.success('文件上传成功');
 
       // 延迟一点时间再刷新，确保 OSS 同步
@@ -456,12 +442,9 @@ const ApiTestPage = () => {
         <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
           <div>
             <Text strong>API地址:</Text>
-            <Input
-              value={apiBaseUrl}
-              onChange={(e) => setApiBaseUrl(e.target.value)}
-              style={{ marginLeft: 10, width: 300 }}
-              placeholder="https://api.niumashuai.top"
-            />
+            <Text type="secondary" style={{ marginLeft: 10 }}>
+              {import.meta.env.PROD ? '(生产环境)' : '(开发环境 - 使用Vite代理)'}
+            </Text>
           </div>
 
           <Button type="primary" onClick={testHealth} loading={loading}>

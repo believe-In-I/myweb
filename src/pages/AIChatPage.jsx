@@ -4,12 +4,11 @@ import { SendOutlined, UserOutlined, RobotOutlined, DeleteOutlined, StopOutlined
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import 'github-markdown-css/github-markdown.css';
+import { aiChat } from '@/api';
 
 marked.use({ gfm: true });
 
 const { Text } = Typography;
-
-const apiBaseUrl = 'https://api.niumashuai.top';
 
 const AI_CHAT_STORAGE_KEY = 'ai_chat_messages';
 
@@ -79,12 +78,7 @@ export default function AIChatPage() {
     ];
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/ai/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: chatMessages }),
-        signal: controller.signal
-      });
+      const response = await aiChat(chatMessages, controller.signal);
 
       if (!response.ok) throw new Error('请求失败');
 

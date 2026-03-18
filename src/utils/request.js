@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 开发环境使用代理，生产环境使用完整 URL
 const isDev = import.meta.env.DEV;
-const baseURL = isDev ? '/api' : 'https://api.niumashuai.top';
+const baseURL = isDev ? 'https://api.niumashuai.top' : '/api';
 
 // 创建 axios 实例
 const request = axios.create({
@@ -35,19 +35,19 @@ request.interceptors.response.use(
   response => {
     // 处理成功响应
     const res = response.data;
-    
+
     // 可以根据后端返回的状态码进行统一处理
     // if (res.code !== 200) {
     //   // 处理错误
     //   return Promise.reject(new Error(res.message || '请求失败'));
     // }
-    
+
     return res;
   },
   error => {
     // 处理响应错误
     console.error('响应错误:', error);
-    
+
     // 可以根据错误状态码进行统一处理
     if (error.response) {
       switch (error.response.status) {
@@ -68,7 +68,7 @@ request.interceptors.response.use(
           break;
       }
     }
-    
+
     return Promise.reject(error);
   }
 );
@@ -105,10 +105,12 @@ export const put = (url, data = {}, config = {}) => {
 
 // 封装 DELETE 请求
 export const del = (url, params = {}, config = {}) => {
+ 
+  
   return request({
     method: 'delete',
     url,
-    params,
+    data: params,  // 用 data 而不是 params
     ...config
   });
 };
