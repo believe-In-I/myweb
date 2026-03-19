@@ -125,4 +125,4 @@ export const patch = (url, data = {}, config = {}) => {
   });
 };
 
-export default request;
+export default request; 

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { BrowserRouter, HashRouter, Routes, Route, NavLink, useLocation, useNavigate, Navigate, Outlet } from 'react-router-dom';
 import { Layout, Menu, Breadcrumb, Typography, Avatar, Dropdown, Space, ConfigProvider, App, Button, message } from 'antd';
-import { HomeOutlined, CodeOutlined, LineChartOutlined, HistoryOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined, LoadingOutlined, RobotOutlined } from '@ant-design/icons';
+import { HomeOutlined, CodeOutlined, LineChartOutlined, HistoryOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined, LoadingOutlined, RobotOutlined, HeartOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import ApiTestPage from './pages/ApiTestPage';
+import HeartPage from './pages/HeartPage';
 import UpdateHistoryPage from './pages/UpdateHistoryPage';
 import G6RelationGraphPage from './pages/G6RelationGraph/G6RelationGraph';
 import VirtualScrollPage from './pages/VirtualScrollPage';
@@ -15,7 +16,7 @@ import MarkdownToMermaidPage from './pages/markdownToMermaid/index.tsx';
 import MarkdownPreviewPage from './pages/markdownPreview/index.tsx';
 import FeishuEditorPage from './pages/FeishuEditor';
 import LanguageSwitcher from './components/LanguageSwitcher';
-import LoginPage from './pages/LoginPage';
+import LoginPage from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import { logout, isAuthenticated, getUser } from './utils/auth';
 
@@ -37,6 +38,7 @@ const routes = [
   { path: '/home/markdown-to-mermaid', nameKey: 'menu.markdownToMermaid', icon: <BarsOutlined /> },
   { path: '/home/markdown-preview', nameKey: 'menu.markdownPreview', icon: <BarsOutlined /> },
   { path: '/home/feishu-editor', nameKey: 'menu.feishuEditor', icon: <BarsOutlined /> },
+  { path: '/home/heart', nameKey: 'menu.heart', icon: <HeartOutlined /> },
 ];
 
 // 内容区域组件
@@ -226,6 +228,7 @@ export default function RouterApp() {
         <App>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/heart" element={<HeartPage />} />
             <Route element={<MainLayout />}>
               <Route path="/" element={<Navigate to="/home/apiTest" replace />} />
               <Route path="/home" element={<Navigate to="/home/apiTest" replace />} />

@@ -15,7 +15,8 @@
     "testView": "Test View",
     "markdownToMermaid": "Mermaid Chart",
     "markdownPreview": "Markdown Preview",
-    "feishuEditor": "Rich Text Editor"
+    "feishuEditor": "Rich Text Editor",
+    "heart": "Heart Page"
   },
   "header": {
     "profile": "Profile",
