@@ -42,7 +42,6 @@ const routes = [
 
 // 内容区域组件
 const ContentArea = () => {
-  const location = useLocation();
   const { t } = useTranslation();
 
   return (
@@ -56,14 +55,10 @@ const ContentArea = () => {
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
       }}
     >
-      {/* 面包屑导航 */}
-      <Breadcrumb style={{ marginBottom: 24 }} items={[
-        { title: t('breadCrumb.home') },
-        { title: t(routes.find(route => route.path === location.pathname)?.nameKey || 'breadCrumb.unknown') },
-      ]} />
+
 
       {/* 页面内容 */}
-      <div style={{ height: 'calc(100vh - 220px)', overflow: 'auto' }}>
+      <div style={{ height: '100%', overflow: 'auto' }}>
         <Outlet />
       </div>
 
@@ -128,6 +123,7 @@ const TopHeader = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const user = getUser();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -175,8 +171,15 @@ const TopHeader = () => {
         height: 64,
       }}
     >
-      <div style={{ fontSize: 18, fontWeight: 'bold', color: '#1890ff' }}>
-        {t('app.systemName')}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ fontSize: 18, fontWeight: 'bold', color: '#1890ff' }}>
+          {t('app.systemName')}
+        </div>
+        {/* 面包屑导航 */}
+        <Breadcrumb  items={[
+          { title: t('breadCrumb.home') },
+          { title: t(routes.find(route => route.path === location.pathname)?.nameKey || 'breadCrumb.unknown') },
+        ]} />
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         <Space size="middle">

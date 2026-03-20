@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, Input, Button, Space, Avatar, Spin, Typography, message } from 'antd';
-import { SendOutlined, UserOutlined, RobotOutlined, DeleteOutlined, StopOutlined } from '@ant-design/icons';
+import { SendOutlined, UserOutlined, RobotOutlined, DeleteOutlined, StopOutlined, PaperClipOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import 'github-markdown-css/github-markdown.css';
@@ -36,8 +36,7 @@ export default function AIChatPage() {
   const [streamingMessageId, setStreamingMessageId] = useState(null);
   const [abortController, setAbortController] = useState(null);
   const messagesEndRef = useRef(null);
-
-  const inputRef = useRef(null);
+  const textareaRef = useRef(null);
   // 缓存消息到 localStorage
   useEffect(() => {
     try {
@@ -66,7 +65,6 @@ export default function AIChatPage() {
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setLoading(true);
-    inputRef.current?.focus();
 
     const controller = new AbortController();
     setAbortController(controller);
@@ -143,6 +141,8 @@ export default function AIChatPage() {
       setLoading(false);
       setStreamingMessageId(null);
       setAbortController(null);
+      // 发送完成后保持输入框聚焦
+      textareaRef.current?.focus();
     }
   };
 
@@ -201,39 +201,33 @@ export default function AIChatPage() {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Card
-        title={
-          <Space>
-            <RobotOutlined style={{ color: '#1890ff' }} />
-            <span>AI 智能助手</span>
-          </Space>
-        }
-        extra={
-          <Button icon={<DeleteOutlined />} onClick={handleClear} size="small">
-            清空对话
-          </Button>
-        }
+
         style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
         styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' } }}
       >
+        <Button icon={<DeleteOutlined />} onClick={handleClear} size="small" style={{ position: 'absolute', top: 0, right: 0, padding: '15px', borderRadius: '15px' }}>
+          清空对话
+        </Button>
         {/* 消息列表 */}
-        <div style={{ flex: 1, overflow: 'auto', padding: '20px', background: '#f5f5f5' }}>
+        <div style={{ flex: 1, overflow: 'auto', padding: '20px' }}>
           {messages.map(msg => (
             <div
               key={msg.id}
               style={{
                 display: 'flex',
+                alignItems: 'center',
                 justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
                 marginBottom: 16
               }}
             >
               {msg.role === 'assistant' && (
-                <Avatar icon={<RobotOutlined />} style={{ backgroundColor: '#1890ff', marginRight: 8 }} />
+                <Avatar src='/AiImage.jpg' style={{ marginRight: 8, width: '50px', height: '50px' }} />
               )}
               <div
                 style={{
                   maxWidth: '70%',
-                  padding: '12px 16px',
-                  borderRadius: 8,
+                  padding: '8px 16px',
+                  borderRadius: '25px',
                   background: msg.role === 'user' ? '#1890ff' : '#fff',
                   color: msg.role === 'user' ? '#fff' : '#333',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
@@ -257,31 +251,115 @@ export default function AIChatPage() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* 输入区域 */}
-        <div style={{ padding: '16px', background: '#fff', borderTop: '1px solid #f0f0f0' }}>
-          <Space.Compact style={{ width: '100%' }}>
-            <Input
-              ref={inputRef}
-              placeholder="输入你想问的问题..."
+        {/* 输入区域 - DeepSeek 风格 */}
+        <div style={{ padding: '16px 20px 20px', background: '#fff' }}>
+          <div
+            className="ai-chat-input-wrap"
+            style={{
+              borderRadius: 24,
+              border: '1px solid #e5e5e5',
+              background: '#fff',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
+              padding: '14px 16px 12px',
+              minHeight: 52,
+            }}
+          >
+            <Input.TextArea
+              ref={textareaRef}
+              placeholder="给 AI 发送消息"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              onPressEnter={handleSend}
-              disabled={loading}
-              size="large"
+              onPressEnter={(e) => {
+                if (!e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              autoSize={{ minRows: 1, maxRows: 6 }}
+              bordered={false}
+              style={{
+                padding: 0,
+                fontSize: 15,
+                lineHeight: 1.5,
+                resize: 'none',
+              }}
+              styles={{
+                textarea: {
+                  padding: 0,
+                  border: 'none',
+                  outline: 'none',
+                  boxShadow: 'none',
+                },
+              }}
             />
-            {loading ? (
-              <Button type="primary" icon={<StopOutlined />} onClick={handleStop} size="large" danger>
-                停止
-              </Button>
-            ) : (
-              <Button type="primary" icon={<SendOutlined />} onClick={handleSend} size="large" disabled={!inputValue.trim()}>
-                发送
-              </Button>
-            )}
-          </Space.Compact>
-          <Text type="secondary" style={{ display: 'block', marginTop: 8, textAlign: 'center' }}>
-            Powered by DeepSeek
-          </Text>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                gap: 8,
+                marginTop: 4,
+              }}
+            >
+              <span
+                style={{
+                  color: '#8c8c8c',
+                  cursor: 'pointer',
+                  padding: 4,
+                  fontSize: 16,
+                }}
+                title="附件（暂未开放）"
+              >
+                <PaperClipOutlined />
+              </span>
+              {loading ? (
+                <button
+                  type="button"
+                  onClick={handleStop}
+                  title="停止"
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: '50%',
+                    border: 'none',
+                    background: '#ff7875',
+                    color: '#fff',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 16,
+                  }}
+                >
+                  <StopOutlined />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleSend}
+                  disabled={!inputValue.trim()}
+                  title="发送"
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: '50%',
+                    border: 'none',
+                    background: inputValue.trim() ? '#b0c4ff' : '#e8e8e8',
+                    color: inputValue.trim() ? '#fff' : '#bfbfbf',
+                    cursor: inputValue.trim() ? 'pointer' : 'not-allowed',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 16,
+                    transition: 'background 0.2s, color 0.2s',
+                  }}
+                >
+                  <ArrowUpOutlined style={{ fontWeight: 'bold' }} />
+                </button>
+              )}
+            </div>
+          </div>
+
         </div>
       </Card>
     </div>
