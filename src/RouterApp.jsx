@@ -5,6 +5,7 @@ import { PictureOutlined, CopyOutlined, BoxPlotOutlined, FileDoneOutlined, FileW
 import { useTranslation } from 'react-i18next';
 import ApiTestPage from './pages/ApiTestPage';
 import HeartPage from './pages/HeartPage';
+import LovePage from './pages/Love';
 import G6RelationGraphPage from './pages/G6RelationGraph/G6RelationGraph';
 import VirtualScrollPage from './pages/VirtualScrollPage';
 import ThreeJs from '@/pages/threeJs';
@@ -231,6 +232,7 @@ export default function RouterApp() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/heart" element={<HeartPage />} />
+            <Route path="/love" element={<LovePage />} />
             <Route element={<MainLayout />}>
               <Route path="/" element={<Navigate to="/home/apiTest" replace />} />
               <Route path="/home" element={<Navigate to="/home/apiTest" replace />} />
