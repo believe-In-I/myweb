@@ -5,7 +5,6 @@ import { HomeOutlined, CodeOutlined, LineChartOutlined, HistoryOutlined, UserOut
 import { useTranslation } from 'react-i18next';
 import ApiTestPage from './pages/ApiTestPage';
 import HeartPage from './pages/HeartPage';
-import UpdateHistoryPage from './pages/UpdateHistoryPage';
 import G6RelationGraphPage from './pages/G6RelationGraph/G6RelationGraph';
 import VirtualScrollPage from './pages/VirtualScrollPage';
 import ThreeJs from '@/pages/threeJs';
@@ -31,7 +30,6 @@ const routes = [
   { path: '/home/apiTest', nameKey: 'menu.apiTest', icon: <HomeOutlined /> },
   { path: '/home/ai-chat', nameKey: 'menu.aiChat', icon: <RobotOutlined /> },
   { path: '/home/g6-dagre', nameKey: 'menu.g6Relation', icon: <LineChartOutlined /> },
-  { path: '/home/update-history', nameKey: 'menu.updateHistory', icon: <HistoryOutlined /> },
   { path: '/home/virtual-scroll', nameKey: 'menu.virtualScroll', icon: <BarsOutlined /> },
   { path: '/home/canvas-virtual-list', nameKey: 'menu.canvasVirtualList', icon: <BarsOutlined /> },
   { path: '/home/threejs', nameKey: 'menu.threejs', icon: <BarsOutlined /> },
@@ -241,11 +239,6 @@ export default function RouterApp() {
               <Route path="/home/ai-chat" element={
                 <ProtectedRoute>
                   <AIChatPage />
-                </ProtectedRoute>
-              } />
-              <Route path="/home/update-history" element={
-                <ProtectedRoute>
-                  <UpdateHistoryPage />
                 </ProtectedRoute>
               } />
               <Route path="/home/g6-dagre" element={
