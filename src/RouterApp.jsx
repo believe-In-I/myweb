@@ -21,8 +21,6 @@ import LoginPage from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import { logout, isAuthenticated, getUser } from './utils/auth';
 
-
-
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
 
