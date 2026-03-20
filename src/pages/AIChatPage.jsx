@@ -185,9 +185,9 @@ export default function AIChatPage() {
         });
         return (
           <div
+          style={{ fontSize: '14px' }}
             className="markdown-body"
             dangerouslySetInnerHTML={{ __html: cleanHtml }}
-            style={{ lineHeight: 1.7 }}
           />
         );
       } catch (error) {
@@ -205,7 +205,7 @@ export default function AIChatPage() {
         style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
         styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' } }}
       >
-        <Button icon={<DeleteOutlined />} onClick={handleClear} size="small" style={{ position: 'absolute', top: 0, right: 0, padding: '15px', borderRadius: '15px' }}>
+        <Button icon={<DeleteOutlined />} onClick={handleClear} size="small" style={{zIndex: 1000, position: 'absolute', top: 0, right: 0, padding: '15px', borderRadius: '15px' }}>
           清空对话
         </Button>
         {/* 消息列表 */}
@@ -221,7 +221,7 @@ export default function AIChatPage() {
               }}
             >
               {msg.role === 'assistant' && (
-                <Avatar src='/AiImage.jpg' style={{ marginRight: 8, width: '50px', height: '50px' }} />
+                <Avatar src='/AiImage.jpg' style={{ marginRight: 8, width: '35px', height: '35px' }} />
               )}
               <div
                 style={{
@@ -231,7 +231,7 @@ export default function AIChatPage() {
                   background: msg.role === 'user' ? '#1890ff' : '#fff',
                   color: msg.role === 'user' ? '#fff' : '#333',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                  wordBreak: 'break-word'
+                  wordBreak: 'break-word',
                 }}
               >
                 {msg.role === 'loading' ? (

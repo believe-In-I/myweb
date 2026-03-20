@@ -57,8 +57,8 @@ const ContentArea = () => {
     >
 
 
-      {/* 页面内容 */}
-      <div style={{ height: '100%', overflow: 'auto' }}>
+      {/* 页面内容 style={{ height: 'calc(100vh - 220px)',*/}
+      <div style={{ height: 'calc(100vh - 160px)', overflow: 'auto' }}>
         <Outlet />
       </div>
 
@@ -176,7 +176,7 @@ const TopHeader = () => {
           {t('app.systemName')}
         </div>
         {/* 面包屑导航 */}
-        <Breadcrumb  items={[
+        <Breadcrumb items={[
           { title: t('breadCrumb.home') },
           { title: t(routes.find(route => route.path === location.pathname)?.nameKey || 'breadCrumb.unknown') },
         ]} />
