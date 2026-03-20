@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, HashRouter, Routes, Route, NavLink, useLocation, useNavigate, Navigate, Outlet } from 'react-router-dom';
 import { Layout, Menu, Breadcrumb, Typography, Avatar, Dropdown, Space, ConfigProvider, App, Button, message } from 'antd';
-import { HomeOutlined, CodeOutlined, LineChartOutlined, HistoryOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined, LoadingOutlined, RobotOutlined, HeartOutlined } from '@ant-design/icons';
+import { PictureOutlined, CopyOutlined, BoxPlotOutlined, FileDoneOutlined, FileWordOutlined, VideoCameraOutlined, AliwangwangOutlined, CloudUploadOutlined, CodeOutlined, LineChartOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import ApiTestPage from './pages/ApiTestPage';
 import HeartPage from './pages/HeartPage';
@@ -27,17 +27,17 @@ const { Title } = Typography;
 
 // 路由配置
 const routes = [
-  { path: '/home/apiTest', nameKey: 'menu.apiTest', icon: <HomeOutlined /> },
-  { path: '/home/ai-chat', nameKey: 'menu.aiChat', icon: <RobotOutlined /> },
+  { path: '/home/apiTest', nameKey: 'menu.apiTest', icon: <CloudUploadOutlined /> },
+  { path: '/home/ai-chat', nameKey: 'menu.aiChat', icon: <AliwangwangOutlined /> },
   { path: '/home/g6-dagre', nameKey: 'menu.g6Relation', icon: <LineChartOutlined /> },
   { path: '/home/virtual-scroll', nameKey: 'menu.virtualScroll', icon: <BarsOutlined /> },
-  { path: '/home/canvas-virtual-list', nameKey: 'menu.canvasVirtualList', icon: <BarsOutlined /> },
-  { path: '/home/threejs', nameKey: 'menu.threejs', icon: <BarsOutlined /> },
+  { path: '/home/canvas-virtual-list', nameKey: 'menu.canvasVirtualList', icon: <PictureOutlined /> },
+  { path: '/home/threejs', nameKey: 'menu.threejs', icon: <VideoCameraOutlined /> },
   { path: '/home/indexeddb-test', nameKey: 'menu.indexeddbTest', icon: <CodeOutlined /> },
-  { path: '/home/markdown-to-mermaid', nameKey: 'menu.markdownToMermaid', icon: <BarsOutlined /> },
-  { path: '/home/markdown-preview', nameKey: 'menu.markdownPreview', icon: <BarsOutlined /> },
-  { path: '/home/feishu-editor', nameKey: 'menu.feishuEditor', icon: <BarsOutlined /> },
-  { path: '/home/clipboard-test', nameKey: 'menu.clipboardTest', icon: <BarsOutlined /> },
+  { path: '/home/markdown-to-mermaid', nameKey: 'menu.markdownToMermaid', icon: <BoxPlotOutlined /> },
+  { path: '/home/markdown-preview', nameKey: 'menu.markdownPreview', icon: <FileDoneOutlined /> },
+  { path: '/home/feishu-editor', nameKey: 'menu.feishuEditor', icon: <FileWordOutlined /> },
+  { path: '/home/clipboard-test', nameKey: 'menu.clipboardTest', icon: <CopyOutlined /> },
 ];
 
 // 内容区域组件
@@ -63,7 +63,7 @@ const ContentArea = () => {
       ]} />
 
       {/* 页面内容 */}
-      <div style={{height:'calc(100vh - 220px)',overflow:'auto'}}>
+      <div style={{ height: 'calc(100vh - 220px)', overflow: 'auto' }}>
         <Outlet />
       </div>
 
@@ -75,7 +75,7 @@ const ContentArea = () => {
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { t } = useTranslation();
-  
+
   return (
     <Sider
       collapsible
@@ -128,13 +128,13 @@ const TopHeader = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const user = getUser();
-  
+
   const handleLogout = () => {
     logout();
     message.success('已退出登录');
     navigate('/login');
   };
-  
+
   const menu = [
     {
       key: '1',
@@ -162,7 +162,7 @@ const TopHeader = () => {
       onClick: handleLogout,
     },
   ];
-  
+
   return (
     <Header
       style={{
@@ -266,7 +266,7 @@ export default function RouterApp() {
                   <IndexedDBTestPage />
                 </ProtectedRoute>
               } />
-             
+
 
               <Route path="/home/markdown-to-mermaid" element={
                 <ProtectedRoute>

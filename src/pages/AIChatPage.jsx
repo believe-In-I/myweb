@@ -12,7 +12,7 @@ const { Text } = Typography;
 
 const AI_CHAT_STORAGE_KEY = 'ai_chat_messages';
 
-const WELCOME_MESSAGE = '你好！我是 DeepSeek AI 助手，有什么可以帮助你的吗？（收费的，用了记得给我转帐，一条消息1块钱，概不赊账）';
+const WELCOME_MESSAGE = '你好！我是雀灵助手，有什么可以帮助你的吗？我是收费的，问问题记得给我转帐，一条消息1块钱，概不赊账';
 
 export default function AIChatPage() {
   const getInitialMessages = () => {

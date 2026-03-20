@@ -4,7 +4,7 @@
     "systemName": "Atom Requirement Management System"
   },
   "menu": {
-    "apiTest": "API Test",
+    "apiTest": "OSS",
     "aiChat": "AI Chat",
     "g6Relation": "G6 Relation Graph",
     "updateHistory": "Update History",
@@ -16,8 +16,7 @@
     "markdownToMermaid": "Mermaid Chart",
     "markdownPreview": "Markdown Preview",
     "feishuEditor": "Rich Text Editor",
-    "clipboardTest": "Clipboard Test",
-    "heart": "Heart Page"
+    "clipboardTest": "Clipboard Test"
   },
   "header": {
     "profile": "Profile",
