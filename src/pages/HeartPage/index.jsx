@@ -5,7 +5,9 @@ const HeartPage = () => {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
+  const isHoveredRef = useRef(false);
   const [hearts, setHearts] = useState([]);
+  const [isFlipped, setIsFlipped] = useState(false);
   const [particles] = useState(() =>
     Array.from({ length: 50 }, (_, i) => ({
       id: i,
@@ -16,7 +18,6 @@ const HeartPage = () => {
       delay: Math.random() * 2,
     }))
   );
-  const [isHovered, setIsHovered] = useState(false);
 
   // 生成飘落的爱心
   useEffect(() => {
@@ -38,19 +39,29 @@ const HeartPage = () => {
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const width = containerRef.current.clientWidth || window.innerWidth || 1;
+    const height = containerRef.current.clientHeight || window.innerHeight || 1;
+
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
-      containerRef.current.clientWidth / containerRef.current.clientHeight,
+      width / height,
       0.1,
       1000
     );
     camera.position.z = 5;
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    containerRef.current.appendChild(renderer.domElement);
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(width, height);
+      // 限制移动端设备像素比以提升性能并避免崩溃
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      containerRef.current.appendChild(renderer.domElement);
+    } catch (e) {
+      console.error('WebGL 初始化失败:', e);
+      return;
+    }
 
     // 创建爱心形状
     const heartShape = new THREE.Shape();
@@ -118,12 +129,14 @@ const HeartPage = () => {
       animationRef.current = requestAnimationFrame(animate);
       time += 0.01;
 
+      const currentIsHovered = isHoveredRef.current;
+
       // 呼吸效果 - 悬停时减弱
-      const breathScale = isHovered ? 1 : 1 + Math.sin(time * 2) * 0.05;
+      const breathScale = currentIsHovered ? 1 : 1 + Math.sin(time * 2) * 0.05;
       heart.scale.set(breathScale, breathScale, breathScale);
 
       // 旋转 - 悬停时停止自动旋转，由 CSS 控制
-      if (!isHovered) {
+      if (!currentIsHovered) {
         heart.rotation.y = Math.sin(time) * 0.3;
         heart.rotation.x = Math.cos(time * 0.5) * 0.1;
       }
@@ -143,10 +156,12 @@ const HeartPage = () => {
     animate();
 
     const handleResize = () => {
-      if (!containerRef.current) return;
-      camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
+      if (!containerRef.current || !renderer) return;
+      const w = containerRef.current.clientWidth || window.innerWidth || 1;
+      const h = containerRef.current.clientHeight || window.innerHeight || 1;
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+      renderer.setSize(w, h);
     };
     window.addEventListener('resize', handleResize);
 
@@ -155,14 +170,20 @@ const HeartPage = () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
-      if (containerRef.current && renderer.domElement) {
+      if (renderer && containerRef.current && containerRef.current.contains(renderer.domElement)) {
         containerRef.current.removeChild(renderer.domElement);
       }
-      renderer.dispose();
+      if (renderer) {
+        renderer.dispose();
+        // 强制丢失上下文，防止移动端 WebGL 上下文泄漏导致白屏崩溃
+        const gl = renderer.getContext();
+        const ext = gl?.getExtension('WEBGL_lose_context');
+        if (ext) ext.loseContext();
+      }
       heartGeometry.dispose();
       heartMaterial.dispose();
     };
-  }, [isHovered]);
+  }, []);
 
   return (
     <div style={styles.container}>
@@ -327,9 +348,14 @@ const HeartPage = () => {
       {/* 可交互的翻转爱心卡片 */}
       <div style={styles.flipCardWrapper}>
         <div
-          className="flip-card"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          className={`flip-card ${isFlipped ? 'flipped' : ''}`}
+          onMouseEnter={() => { isHoveredRef.current = true; }}
+          onMouseLeave={() => { isHoveredRef.current = false; }}
+          onClick={() => {
+            const nextFlipped = !isFlipped;
+            setIsFlipped(nextFlipped);
+            isHoveredRef.current = nextFlipped;
+          }}
         >
           <div className="flip-card-inner">
             {/* 正面 - 爱心 */}
@@ -406,7 +432,8 @@ const styles = {
   container: {
     position: 'relative',
     width: '100%',
-    height: '100vh',
+    height: '100dvh',
+    minHeight: '100vh',
     background: 'linear-gradient(135deg, #1a0a1a 0%, #2d1f3d 50%, #1a0a1a 100%)',
     overflow: 'hidden',
     display: 'flex',
