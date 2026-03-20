@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 开发环境使用代理，生产环境使用完整 URL
 const isDev = import.meta.env.DEV;
-const baseURL = isDev ? 'https://api.niumashuai.top' : '/api';
+const baseURL = 'https://api.niumashuai.top';
 
 // 创建 axios 实例
 const request = axios.create({
@@ -105,8 +105,8 @@ export const put = (url, data = {}, config = {}) => {
 
 // 封装 DELETE 请求
 export const del = (url, params = {}, config = {}) => {
- 
-  
+
+
   return request({
     method: 'delete',
     url,

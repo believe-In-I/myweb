@@ -22,6 +22,10 @@ import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import TextAlign from '@tiptap/extension-text-align';
+import { TextStyle } from '@tiptap/extension-text-style';
+import { FontSize } from '@tiptap/extension-text-style';
+import { Color } from '@tiptap/extension-color';
+import { Highlight } from '@tiptap/extension-highlight';
 import { Button, Space, Card } from 'antd';
 import {
   Toolbar,
@@ -69,6 +73,13 @@ const FeishuEditorPage = () => {
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
+      }),
+      // 字体样式扩展
+      TextStyle,
+      FontSize,
+      Color,
+      Highlight.configure({
+        multicolor: true, // 支持多种背景颜色
       }),
     ],
     content: `

@@ -15,6 +15,7 @@ import AIChatPage from './pages/AIChatPage';
 import MarkdownToMermaidPage from './pages/markdownToMermaid/index.tsx';
 import MarkdownPreviewPage from './pages/markdownPreview/index.tsx';
 import FeishuEditorPage from './pages/FeishuEditor';
+import ClipboardTestPage from './pages/ClipboardTestPage';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import LoginPage from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -38,7 +39,7 @@ const routes = [
   { path: '/home/markdown-to-mermaid', nameKey: 'menu.markdownToMermaid', icon: <BarsOutlined /> },
   { path: '/home/markdown-preview', nameKey: 'menu.markdownPreview', icon: <BarsOutlined /> },
   { path: '/home/feishu-editor', nameKey: 'menu.feishuEditor', icon: <BarsOutlined /> },
-  { path: '/home/heart', nameKey: 'menu.heart', icon: <HeartOutlined /> },
+  { path: '/home/clipboard-test', nameKey: 'menu.clipboardTest', icon: <BarsOutlined /> },
 ];
 
 // 内容区域组件
@@ -287,6 +288,11 @@ export default function RouterApp() {
               <Route path="/home/feishu-editor" element={
                 <ProtectedRoute>
                   <FeishuEditorPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/clipboard-test" element={
+                <ProtectedRoute>
+                  <ClipboardTestPage />
                 </ProtectedRoute>
               } />
             </Route>
