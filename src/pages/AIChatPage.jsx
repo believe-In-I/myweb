@@ -40,7 +40,7 @@ export default function AIChatPage() {
   // 缓存消息到 localStorage
   useEffect(() => {
     try {
-      localStorage.setItem(AI_CHAT_STORAGE_KEY, JSON.stringify(messages));
+      localStorage.setItem(AI_CHAT_STORAGE_KEY, JSON.stringify(messages.slice(messages.length - 100, messages.length)));
     } catch (e) {
       console.error('保存聊天记录失败:', e);
     }
@@ -185,7 +185,7 @@ export default function AIChatPage() {
         });
         return (
           <div
-          style={{ fontSize: '14px' }}
+            style={{ fontSize: '14px' }}
             className="markdown-body"
             dangerouslySetInnerHTML={{ __html: cleanHtml }}
           />
@@ -205,7 +205,7 @@ export default function AIChatPage() {
         style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
         styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' } }}
       >
-        <Button icon={<DeleteOutlined />} onClick={handleClear} size="small" style={{zIndex: 1000, position: 'absolute', top: 0, right: 0, padding: '15px', borderRadius: '15px' }}>
+        <Button icon={<DeleteOutlined />} onClick={handleClear} size="small" style={{ zIndex: 1000, position: 'absolute', top: 0, right: 0, padding: '15px', borderRadius: '15px' }}>
           清空对话
         </Button>
         {/* 消息列表 */}
