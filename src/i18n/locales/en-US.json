@@ -6,6 +6,7 @@
   "menu": {
     "apiTest": "OSS",
     "aiChat": "AI Chat",
+    "wsChat": "Live Chat",
     "g6Relation": "G6 Relation Graph",
     "updateHistory": "Update History",
     "virtualScroll": "Virtual Scroll",

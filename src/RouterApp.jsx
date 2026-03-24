@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter, HashRouter, Routes, Route, NavLink, useLocation, useNavigate, Navigate, Outlet } from 'react-router-dom';
 import { Layout, Menu, Breadcrumb, Typography, Avatar, Dropdown, Space, ConfigProvider, App, Button, message } from 'antd';
-import { PictureOutlined, CopyOutlined, BoxPlotOutlined, FileDoneOutlined, FileWordOutlined, VideoCameraOutlined, AliwangwangOutlined, CloudUploadOutlined, CodeOutlined, LineChartOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined } from '@ant-design/icons';
+import { PictureOutlined, CopyOutlined, BoxPlotOutlined, FileDoneOutlined, FileWordOutlined, VideoCameraOutlined, AliwangwangOutlined, CloudUploadOutlined, CodeOutlined, LineChartOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined, MessageOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import ApiTestPage from './pages/ApiTestPage';
 import HeartPage from './pages/HeartPage';
@@ -12,6 +12,7 @@ import ThreeJs from '@/pages/threeJs';
 import IndexedDBTestPage from './pages/IndexedDBTestPage';
 import CanvasVirtualListPage from './pages/CanvasVirtualListPage'
 import AIChatPage from './pages/AIChatPage';
+import WebSocketChatPage from './pages/WebSocketChatPage';
 import MarkdownToMermaidPage from './pages/markdownToMermaid/index.tsx';
 import MarkdownPreviewPage from './pages/markdownPreview/index.tsx';
 import FeishuEditorPage from './pages/FeishuEditor';
@@ -28,6 +29,7 @@ const { Title } = Typography;
 const routes = [
   { path: '/home/apiTest', nameKey: 'menu.apiTest', icon: <CloudUploadOutlined /> },
   { path: '/home/ai-chat', nameKey: 'menu.aiChat', icon: <AliwangwangOutlined /> },
+  { path: '/home/ws-chat', nameKey: 'menu.wsChat', icon: <MessageOutlined /> },
   { path: '/home/g6-dagre', nameKey: 'menu.g6Relation', icon: <LineChartOutlined /> },
   { path: '/home/virtual-scroll', nameKey: 'menu.virtualScroll', icon: <BarsOutlined /> },
   { path: '/home/canvas-virtual-list', nameKey: 'menu.canvasVirtualList', icon: <PictureOutlined /> },
@@ -242,6 +244,11 @@ export default function RouterApp() {
               <Route path="/home/ai-chat" element={
                 <ProtectedRoute>
                   <AIChatPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/ws-chat" element={
+                <ProtectedRoute>
+                  <WebSocketChatPage />
                 </ProtectedRoute>
               } />
               <Route path="/home/g6-dagre" element={

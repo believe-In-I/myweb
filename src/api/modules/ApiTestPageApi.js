@@ -20,3 +20,8 @@ export const ossCreateDir = (dirName, parentPath) => post(`/api/oss/create-dir`,
 export const ossUpload = (formData) => post(`/api/oss/upload`, formData, {
   headers: { 'Content-Type': 'multipart/form-data' }
 });
+
+/** 聊天室：图片 / 视频 / 语音 / 文件 */
+export const ossUploadChat = (formData) => post(`/api/oss/upload-chat`, formData, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+});
