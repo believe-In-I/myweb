@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Button, Upload, Typography, Alert, Spin, Space, Input, Table, Popconfirm, message, Tag, Breadcrumb, Modal, Form, Tooltip, Empty } from 'antd';
+import { Card, Button, Upload, Typography, Alert, Spin, Space, Input, Table, Popconfirm, message, Tag, Breadcrumb, Modal, Form, Tooltip, Empty, ConfigProvider } from 'antd';
 import { FolderOutlined, FileOutlined, DownloadOutlined, CopyOutlined, DeleteOutlined, PlusOutlined, HomeOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { healthCheck, ossList, ossDelete, ossDeleteDir, ossDownloadUrl, ossCreateDir, ossUpload } from '@/api';
+import useResponsive, { BREAKPOINTS } from '@/hooks/useResponsive';
 
 const { Title, Text } = Typography;
 
@@ -20,6 +21,9 @@ const ApiTestPage = () => {
   // const apiBaseUrl = 'https://api.niumashuai.top';
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // 响应式状态
+  const { isMobile, isTablet, isXs } = useResponsive();
 
   // 上传结果
   const [uploadResult, setUploadResult] = useState(null);
@@ -269,83 +273,91 @@ const ApiTestPage = () => {
     return false;
   };
 
-  // 表格列配置 - 文件
-  const fileColumns = [
-    {
-      title: '预览',
-      key: 'preview',
-      width: 80,
-      render: (_, record) => {
-        const isImage = record.contentType?.includes('image') || /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(record.key);
-        if (isImage && record.url) {
-          return (
-            <img
-              src={record.url}
-              alt="preview"
-              style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 4 }}
-              onError={(e) => { e.target.style.display = 'none'; }}
-            />
-          );
+  // 表格列配置 - 文件（响应式）
+  const getFileColumns = () => {
+    const baseColumns = [
+      {
+        title: '预览',
+        key: 'preview',
+        width: isMobile ? 50 : 80,
+        render: (_, record) => {
+          const isImage = record.contentType?.includes('image') || /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(record.key);
+          if (isImage && record.url) {
+            return (
+              <img
+                src={record.url}
+                alt="preview"
+                style={{ width: isMobile ? 36 : 50, height: isMobile ? 36 : 50, objectFit: 'cover', borderRadius: 4 }}
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+            );
+          }
+          return <FileOutlined style={{ fontSize: isMobile ? 18 : 24, color: '#999' }} />;
         }
-        return <FileOutlined style={{ fontSize: 24, color: '#999' }} />;
-      }
-    },
-    {
-      title: '文件名',
-      dataIndex: 'key',
-      key: 'name',
-      render: (text) => {
-        const fileName = text.split('/').pop();
-        return (
-          <Space>
-            <span>{fileName}</span>
-          </Space>
-        );
-      }
-    },
-    {
-      title: '大小',
-      dataIndex: 'size',
-      key: 'size',
-      width: 100,
-      render: (size) => {
-        if (!size || size === 0) return '-';
-        if (size < 1024) return `${size} B`;
-        if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
-        return `${(size / (1024 * 1024)).toFixed(1)} MB`;
-      }
-    },
-    {
-      title: '类型',
-      dataIndex: 'contentType',
-      key: 'contentType',
-      width: 150,
-      render: (type) => {
-        if (!type) return <Tag>unknown</Tag>;
-        if (type.includes('image')) return <Tag color="green">图片</Tag>;
-        if (type.includes('video')) return <Tag color="purple">视频</Tag>;
-        if (type.includes('audio')) return <Tag color="orange">音频</Tag>;
-        if (type.includes('pdf')) return <Tag color="red">PDF</Tag>;
-        if (type.includes('text')) return <Tag color="blue">文本</Tag>;
-        return <Tag>{type.split('/')[1]}</Tag>;
-      }
-    },
-    {
-      title: '上传时间',
-      dataIndex: 'lastModified',
-      key: 'lastModified',
-      width: 180,
-      render: (date) => date ? new Date(date).toLocaleString('zh-CN') : '-'
-    },
-    {
+      },
+      {
+        title: '文件名',
+        dataIndex: 'key',
+        key: 'name',
+        render: (text) => {
+          const fileName = text.split('/').pop();
+          return <span style={{ fontSize: isMobile ? 12 : 14 }}>{fileName}</span>;
+        }
+      },
+      {
+        title: '大小',
+        dataIndex: 'size',
+        key: 'size',
+        width: isMobile ? 60 : 100,
+        render: (size) => {
+          if (!size || size === 0) return '-';
+          if (size < 1024) return `${size} B`;
+          if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+          return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+        }
+      },
+    ];
+
+    // 桌面端额外显示列
+    if (!isMobile) {
+      baseColumns.push(
+        {
+          title: '类型',
+          dataIndex: 'contentType',
+          key: 'contentType',
+          width: 150,
+          render: (type) => {
+            if (!type) return <Tag>unknown</Tag>;
+            if (type.includes('image')) return <Tag color="green">图片</Tag>;
+            if (type.includes('video')) return <Tag color="purple">视频</Tag>;
+            if (type.includes('audio')) return <Tag color="orange">音频</Tag>;
+            if (type.includes('pdf')) return <Tag color="red">PDF</Tag>;
+            if (type.includes('text')) return <Tag color="blue">文本</Tag>;
+            return <Tag>{type.split('/')[1]}</Tag>;
+          }
+        },
+        {
+          title: '上传时间',
+          dataIndex: 'lastModified',
+          key: 'lastModified',
+          width: 180,
+          render: (date) => date ? new Date(date).toLocaleString('zh-CN') : '-'
+        }
+      );
+    }
+
+    // 操作列
+    baseColumns.push({
       title: '操作',
       key: 'action',
-      width: 180,
+      width: isMobile ? 80 : 180,
+      fixed: isMobile ? 'right' : undefined,
       render: (_, record) => (
-        <Space size="small">
+        <Space size={isMobile ? "small" : "small"}>
           <Tooltip title="下载">
             <Button
               type="text"
+              size="small"
               icon={<DownloadOutlined />}
               onClick={() => handleDownload(record.key)}
             />
@@ -353,79 +365,94 @@ const ApiTestPage = () => {
           <Tooltip title="复制链接">
             <Button
               type="text"
+              size="small"
               icon={<CopyOutlined />}
               onClick={() => handleCopyLink(record.key)}
             />
           </Tooltip>
           <Popconfirm
             title="确认删除"
-            description="确定要删除这个文件吗？此操作不可恢复。"
+            description="确定要删除这个文件吗？"
             onConfirm={() => handleDeleteFile(record.key)}
             okText="确定"
             cancelText="取消"
           >
             <Tooltip title="删除">
-              <Button type="text" danger icon={<DeleteOutlined />} />
+              <Button type="text" size="small" danger icon={<DeleteOutlined />} />
             </Tooltip>
           </Popconfirm>
         </Space>
       )
-    }
-  ];
+    });
 
-  // 表格列配置 - 目录
-  const dirColumns = [
-    {
-      title: '目录名',
-      dataIndex: 'key',
-      key: 'name',
-      render: (text) => {
-        const dirName = text.split('/').filter(Boolean).pop();
-        return (
-          <Space>
-            <FolderOutlined style={{ color: '#faad14' }} />
-            <span style={{ cursor: 'pointer', color: '#1890ff' }} onClick={() => handleEnterDir(text)}>
-              {dirName}
-            </span>
-          </Space>
-        );
-      }
-    },
-    {
-      title: '路径',
-      dataIndex: 'key',
-      key: 'path',
-      ellipsis: true,
-      render: (text) => <code style={{ fontSize: 12 }}>{text}</code>
-    },
-    {
-      title: '操作',
-      key: 'action',
-      width: 100,
-      render: (_, record) => (
-        <Space size="small">
-          <Tooltip title="进入">
-            <Button
-              type="text"
-              icon={<ArrowLeftOutlined style={{ rotate: '180deg' }} />}
-              onClick={() => handleEnterDir(record.key)}
-            />
-          </Tooltip>
-          <Popconfirm
-            title="确认删除"
-            description="确定要删除这个目录及其所有内容吗？此操作不可恢复。"
-            onConfirm={() => handleDeleteDir(record.key)}
-            okText="确定"
-            cancelText="取消"
-          >
-            <Tooltip title="删除目录">
-              <Button type="text" danger icon={<DeleteOutlined />} />
+    return baseColumns;
+  };
+
+  // 表格列配置 - 目录（响应式）
+  const getDirColumns = () => {
+    const columns = [
+      {
+        title: '目录名',
+        dataIndex: 'key',
+        key: 'name',
+        render: (text) => {
+          const dirName = text.split('/').filter(Boolean).pop();
+          return (
+            <Space>
+              <FolderOutlined style={{ color: '#faad14' }} />
+              <span 
+                style={{ 
+                  cursor: 'pointer', 
+                  color: '#1890ff',
+                  fontSize: isMobile ? 12 : 14 
+                }} 
+                onClick={() => handleEnterDir(text)}
+              >
+                {dirName}
+              </span>
+            </Space>
+          );
+        }
+      },
+      {
+        title: '路径',
+        dataIndex: 'key',
+        key: 'path',
+        ellipsis: true,
+        width: isMobile ? 100 : undefined,
+        render: (text) => <code style={{ fontSize: isMobile ? 10 : 12 }}>{text}</code>
+      },
+      {
+        title: '操作',
+        key: 'action',
+        width: 100,
+        render: (_, record) => (
+          <Space size="small">
+            <Tooltip title="进入">
+              <Button
+                type="text"
+                size="small"
+                icon={<ArrowLeftOutlined style={{ rotate: '180deg' }} />}
+                onClick={() => handleEnterDir(record.key)}
+              />
             </Tooltip>
-          </Popconfirm>
-        </Space>
-      )
-    }
-  ];
+            <Popconfirm
+              title="确认删除"
+              description="确定要删除这个目录及其所有内容吗？"
+              onConfirm={() => handleDeleteDir(record.key)}
+              okText="确定"
+              cancelText="取消"
+            >
+              <Tooltip title="删除目录">
+                <Button type="text" size="small" danger icon={<DeleteOutlined />} />
+              </Tooltip>
+            </Popconfirm>
+          </Space>
+        )
+      }
+    ];
+    return columns;
+  };
 
   // 合并目录和文件数据（目录在前）
   const combinedData = [
@@ -433,21 +460,29 @@ const ApiTestPage = () => {
     ...fileList.map(f => ({ ...f, type: 'file' }))
   ];
 
+  // 响应式配置
+  const responsivePadding = isMobile ? (isXs ? 8 : 12) : 20;
+  const responsiveMargin = isMobile ? (isXs ? 8 : 12) : 20;
+
   return (
-    <div style={{ padding: '20px' }}>
-      <Title level={2}>OSS文件管理器</Title>
+    <div style={{ padding: responsivePadding }}>
+      <Title level={isMobile ? 4 : 2} style={{ marginBottom: responsiveMargin, fontSize: isMobile ? 18 : undefined }}>OSS文件管理器</Title>
 
       {/* API Base URL配置 */}
-      <Card title="配置" style={{ marginBottom: 20 }}>
-        <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
-          <div>
-            <Text strong>API地址:</Text>
-            <Text type="secondary" style={{ marginLeft: 10 }}>
-              {import.meta.env.PROD ? '(生产环境)' : '(开发环境 - 使用Vite代理)'}
+      <Card 
+        title={isMobile ? "配置" : undefined} 
+        style={{ marginBottom: responsiveMargin }}
+        size="small"
+      >
+        <Space orientation="vertical" size="small" style={{ width: '100%' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            <Text strong style={{ fontSize: isMobile ? 12 : 14 }}>API地址:</Text>
+            <Text type="secondary" style={{ fontSize: isMobile ? 11 : 13 }}>
+              {import.meta.env.PROD ? '(生产环境)' : '(开发环境)'}
             </Text>
           </div>
 
-          <Button type="primary" onClick={testHealth} loading={loading}>
+          <Button type="primary" onClick={testHealth} loading={loading} size={isMobile ? 'small' : 'middle'}>
             检查服务状态
           </Button>
         </Space>
@@ -460,7 +495,7 @@ const ApiTestPage = () => {
           description={error}
           type="error"
           showIcon
-          style={{ marginBottom: 20 }}
+          style={{ marginBottom: responsiveMargin }}
           closable
           onClose={() => setError(null)}
         />
@@ -469,9 +504,10 @@ const ApiTestPage = () => {
       {/* 文件操作区 */}
       <Card
         title={
-          <Space>
-            <span>当前目录: </span>
+          <Space wrap>
+            <span style={{ fontSize: isMobile ? 12 : 14 }}>当前目录: </span>
             <Breadcrumb
+              style={{ fontSize: isMobile ? 11 : 13 }}
               items={getBreadcrumbItems().map((item, index) => ({
                 title: index === getBreadcrumbItems().length - 1 ? (
                   item.title
@@ -482,33 +518,36 @@ const ApiTestPage = () => {
             />
           </Space>
         }
-        style={{ marginBottom: 20 }}
+        style={{ marginBottom: responsiveMargin }}
+        size="small"
         extra={
-          <Space>
+          <Space wrap size={isMobile ? "small" : "small"}>
             <Button
+              size={isMobile ? 'small' : 'middle'}
               icon={<ArrowLeftOutlined />}
               onClick={handleGoBack}
               disabled={currentPath === 'uploads/'}
             >
-              返回上级
+              {!isMobile && '返回上级'}
             </Button>
             <Button
+              size={isMobile ? 'small' : 'middle'}
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => setCreateDirModalVisible(true)}
             >
-              新建目录
+              {!isMobile && '新建目录'}
             </Button>
             <Upload
               beforeUpload={handleFileUpload}
               showUploadList={false}
               multiple
             >
-              <Button type="primary" icon={<Upload />} loading={loading}>
-                上传文件
+              <Button size={isMobile ? 'small' : 'middle'} type="primary" icon={<Upload />} loading={loading}>
+                {isMobile ? '上传' : '上传文件'}
               </Button>
             </Upload>
-            <Button onClick={handleRefresh} loading={loading}>
+            <Button size={isMobile ? 'small' : 'middle'} onClick={handleRefresh} loading={loading}>
               刷新
             </Button>
           </Space>
@@ -521,19 +560,20 @@ const ApiTestPage = () => {
         ) : dirList.length === 0 && fileList.length === 0 ? (
           <Empty description="当前目录为空" />
         ) : (
-          <Space orientation="vertical" style={{ width: '100%' }} size="large">
+          <Space orientation="vertical" style={{ width: '100%' }} size="middle">
             {/* 目录列表 */}
             {dirList.length > 0 && (
               <div>
-                <Text strong style={{ display: 'block', marginBottom: 10 }}>
+                <Text strong style={{ display: 'block', marginBottom: 10, fontSize: isMobile ? 12 : 14 }}>
                   <FolderOutlined /> 文件夹 ({dirList.length})
                 </Text>
                 <Table
-                  columns={dirColumns}
+                  columns={getDirColumns()}
                   dataSource={dirList}
                   rowKey="key"
                   pagination={false}
                   size="small"
+                  scroll={{ x: 'max-content' }}
                 />
               </div>
             )}
@@ -541,15 +581,16 @@ const ApiTestPage = () => {
             {/* 文件列表 */}
             {fileList.length > 0 && (
               <div>
-                <Text strong style={{ display: 'block', marginBottom: 10 }}>
+                <Text strong style={{ display: 'block', marginBottom: 10, fontSize: isMobile ? 12 : 14 }}>
                   <FileOutlined /> 文件 ({fileList.length})
                 </Text>
                 <Table
-                  columns={fileColumns}
+                  columns={getFileColumns()}
                   dataSource={fileList}
                   rowKey="key"
-                  pagination={{ pageSize: 10 }}
+                  pagination={{ pageSize: isMobile ? 5 : 10 }}
                   size="small"
+                  scroll={{ x: 'max-content' }}
                 />
               </div>
             )}
@@ -559,27 +600,28 @@ const ApiTestPage = () => {
 
       {/* 上传结果 */}
       {uploadResult && (
-        <Card title="上传结果" style={{ marginBottom: 20 }}>
+        <Card title="上传结果" style={{ marginBottom: responsiveMargin }} size="small">
           <Space orientation="vertical" style={{ width: '100%' }}>
             <div>
-              <Text strong>文件URL:</Text>
-              <div style={{ marginTop: 5, wordBreak: 'break-all' }}>
+              <Text strong style={{ fontSize: isMobile ? 12 : 14 }}>文件URL:</Text>
+              <div style={{ marginTop: 5, wordBreak: 'break-all', fontSize: isMobile ? 11 : 13 }}>
                 <a href={uploadResult.url} target="_blank" rel="noopener noreferrer">
                   {uploadResult.url}
                 </a>
               </div>
             </div>
 
-            <div>
+            <div style={{ fontSize: isMobile ? 12 : 14 }}>
               <Text strong>文件路径:</Text> {uploadResult.key}
             </div>
 
-            <div>
+            <div style={{ fontSize: isMobile ? 12 : 14 }}>
               <Text strong>文件大小:</Text> {uploadResult.size} bytes
             </div>
 
-            <Space>
+            <Space wrap>
               <Button
+                size={isMobile ? 'small' : 'middle'}
                 icon={<CopyOutlined />}
                 onClick={() => {
                   navigator.clipboard.writeText(uploadResult.url);
@@ -589,6 +631,7 @@ const ApiTestPage = () => {
                 复制链接
               </Button>
               <Button
+                size={isMobile ? 'small' : 'middle'}
                 icon={<DownloadOutlined />}
                 onClick={() => {
                   const link = document.createElement('a');
@@ -613,6 +656,7 @@ const ApiTestPage = () => {
           form.resetFields();
         }}
         footer={null}
+        width={isMobile ? '90%' : 480}
       >
         <Form
           form={form}

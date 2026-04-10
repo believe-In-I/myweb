@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import useResponsive from '@/hooks/useResponsive';
 
 /**
  * Three.js 入门级 Demo
@@ -16,8 +17,15 @@ const ThreeJsDemo = () => {
   // 引用 DOM 元素
   const containerRef = useRef(null);
   
+  // 响应式状态
+  const { isMobile, isTablet } = useResponsive();
+  
   // 存储 Three.js 相关对象
   let scene, camera, renderer, cube, controls, light;
+  
+  // 响应式配置
+  const containerHeight = isMobile ? 350 : isTablet ? 450 : 600;
+  const paddingSize = isMobile ? 12 : 20;
   
   useEffect(() => {
     if (!containerRef.current) return;
@@ -139,31 +147,41 @@ const ThreeJsDemo = () => {
   };
   
   return (
-    <div style={{ padding: '20px' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Three.js 入门 Demo</h1>
+    <div style={{ padding: paddingSize }}>
+      <h1 style={{ 
+        textAlign: 'center', 
+        marginBottom: isMobile ? 12 : 20,
+        fontSize: isMobile ? 18 : undefined
+      }}>
+        {isMobile ? 'Three.js Demo' : 'Three.js 入门 Demo'}
+      </h1>
       <div 
         ref={containerRef} 
         style={{ 
           width: '100%', 
-          height: '600px',
+          height: containerHeight,
           border: '1px solid #ddd',
           borderRadius: '8px',
           overflow: 'hidden'
         }} 
       />
-      <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
-        <h3>学习要点</h3>
-        <ul>
+      <div style={{ 
+        marginTop: isMobile ? 12 : 20, 
+        padding: isMobile ? 12 : 15, 
+        backgroundColor: '#f5f5f5', 
+        borderRadius: '8px',
+        fontSize: isMobile ? 12 : 14
+      }}>
+        <h3 style={{ fontSize: isMobile ? 14 : 16, marginBottom: isMobile ? 8 : 12 }}>学习要点</h3>
+        <ul style={{ paddingLeft: isMobile ? 16 : 20, margin: 0 }}>
           <li><strong>场景 (Scene)</strong>：Three.js 的容器，用于放置所有 3D 对象</li>
           <li><strong>相机 (Camera)</strong>：定义观察视角，决定我们看到的内容</li>
           <li><strong>渲染器 (Renderer)</strong>：将 3D 场景渲染到 2D 屏幕上</li>
-          <li><strong>几何体 (Geometry)</strong>：定义 3D 对象的形状</li>
-          <li><strong>材质 (Material)</strong>：定义 3D 对象的外观</li>
-          <li><strong>光源 (Light)</strong>：为场景提供照明，影响材质的显示效果</li>
-          <li><strong>动画循环</strong>：通过 requestAnimationFrame 实现持续渲染</li>
+          <li><strong>几何体 + 材质</strong>：定义 3D 对象的形状和外观</li>
+          <li><strong>光源 (Light)</strong>：为场景提供照明</li>
           <li><strong>轨道控制器</strong>：允许用户交互控制相机视角</li>
         </ul>
-        <p style={{ marginTop: '10px', fontSize: '14px', color: '#666' }}>
+        <p style={{ marginTop: isMobile ? 8 : 10, fontSize: isMobile ? 12 : 14, color: '#666' }}>
           尝试使用鼠标操作：拖动旋转视角，滚轮缩放，Shift+拖动平移
         </p>
       </div>

@@ -38,11 +38,15 @@ import {
   showJsonModal,
 } from './components';
 import './FeishuEditor.css';
+import useResponsive from '@/hooks/useResponsive';
 
 /**
  * 飞书风格富文本编辑器主组件
  */
 const FeishuEditorPage = () => {
+  // 响应式状态
+  const { isMobile, isTablet } = useResponsive();
+  
   const [linkModalOpen, setLinkModalOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState('');
@@ -164,16 +168,28 @@ const FeishuEditorPage = () => {
     return null;
   }
 
+  // 响应式配置
+  const paddingSize = isMobile ? 12 : 20;
+  const editorMinHeight = isMobile ? 300 : 400;
+
   return (
     <div className="feishu-editor-page">
       <Card
-        title="飞书风格富文本编辑器"
+        title={isMobile ? "编辑器" : "飞书风格富文本编辑器"}
         extra={
-          <Space>
-            <Button onClick={() => showHtmlModal(getHTML())}>获取 HTML</Button>
-            <Button onClick={() => showJsonModal(getJSON())}>获取 JSON</Button>
-          </Space>
+          isMobile ? (
+            <Space size="small">
+              <Button size="small" onClick={() => showHtmlModal(getHTML())}>HTML</Button>
+              <Button size="small" onClick={() => showJsonModal(getJSON())}>JSON</Button>
+            </Space>
+          ) : (
+            <Space>
+              <Button onClick={() => showHtmlModal(getHTML())}>获取 HTML</Button>
+              <Button onClick={() => showJsonModal(getJSON())}>获取 JSON</Button>
+            </Space>
+          )
         }
+        size="small"
       >
         <Toolbar
           editor={editor}

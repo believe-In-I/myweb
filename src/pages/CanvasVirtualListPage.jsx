@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Input, Button, Slider, message } from 'antd';
+import useResponsive from '@/hooks/useResponsive';
 
 /**
  * Canvas + 瓦片虚拟列表组件
@@ -17,6 +18,9 @@ import { Card, Input, Button, Slider, message } from 'antd';
  * - 列表项内容复杂（包含图片、图形等）
  */
 const CanvasVirtualListPage = () => {
+  // 响应式状态
+  const { isMobile, isTablet } = useResponsive();
+  
   // ==================== i18n 翻译函数 ====================
   const { t } = useTranslation();
   
@@ -387,60 +391,99 @@ const CanvasVirtualListPage = () => {
     }
   };
 
+  // 响应式配置
+  const paddingSize = isMobile ? 12 : 20;
+  const containerHeight = isMobile ? 350 : 500;
+  const inputWidth = isMobile ? 80 : 100;
+  const sliderWidth = isMobile ? 200 : 300;
+
   // ==================== 渲染界面 ====================
   
   return (
-    <div style={{ padding: '20px' }}>
-      <Card title="Canvas + 瓦片虚拟列表">
+    <div style={{ padding: paddingSize }}>
+      <Card 
+        title={isMobile ? "Canvas虚拟列表" : "Canvas + 瓦片虚拟列表"} 
+        size="small"
+      >
         {/* 控制面板 */}
-        <div style={{ marginBottom: '20px' }}>
+        <div style={{ marginBottom: isMobile ? 12 : 20 }}>
           {/* 第一行：数值输入框 */}
-          <div style={{ marginBottom: '10px' }}>
-            <label style={{ marginRight: '10px' }}>数据量:</label>
-            <Input
-              type="number"
-              value={dataSize}
-              onChange={(e) => setDataSize(Number(e.target.value))}
-              style={{ width: '100px', marginRight: '10px' }}
-            />
-            <label style={{ marginRight: '10px' }}>瓦片项数:</label>
-            <Input
-              type="number"
-              value={tileSize}
-              onChange={(e) => setTileSize(Number(e.target.value))}
-              style={{ width: '100px', marginRight: '10px' }}
-            />
-            <label style={{ marginRight: '10px' }}>项高度:</label>
-            <Input
-              type="number"
-              value={itemHeight}
-              onChange={(e) => setItemHeight(Number(e.target.value))}
-              style={{ width: '100px', marginRight: '10px' }}
-            />
-            <Button 
-              type="primary" 
-              onClick={handleReset} 
-              style={{ marginRight: '8px' }}
-            >
-              重置
-            </Button>
-            <Button onClick={handleClearCache}>
-              清除缓存
-            </Button>
+          <div style={{ 
+            marginBottom: isMobile ? 8 : 10, 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            gap: isMobile ? 8 : 10,
+            alignItems: 'center'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <label style={{ fontSize: isMobile ? 12 : 14 }}>数据量:</label>
+              <Input
+                type="number"
+                value={dataSize}
+                onChange={(e) => setDataSize(Number(e.target.value))}
+                style={{ width: inputWidth }}
+                size={isMobile ? 'small' : 'middle'}
+              />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <label style={{ fontSize: isMobile ? 12 : 14 }}>瓦片项数:</label>
+              <Input
+                type="number"
+                value={tileSize}
+                onChange={(e) => setTileSize(Number(e.target.value))}
+                style={{ width: inputWidth }}
+                size={isMobile ? 'small' : 'middle'}
+              />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <label style={{ fontSize: isMobile ? 12 : 14 }}>项高度:</label>
+              <Input
+                type="number"
+                value={itemHeight}
+                onChange={(e) => setItemHeight(Number(e.target.value))}
+                style={{ width: inputWidth }}
+                size={isMobile ? 'small' : 'middle'}
+              />
+            </div>
           </div>
-          
-          {/* 第二行：滑块 */}
-          <div style={{ marginBottom: '10px' }}>
-            <label style={{ marginRight: '10px' }}>数据量滑块:</label>
-            <Slider
-              min={1000}
-              max={100000}
-              step={1000}
-              value={dataSize}
-              onChange={setDataSize}
-              style={{ width: '300px', marginRight: '10px' }}
-            />
-            <span>{dataSize} 条</span>
+
+          {/* 第二行：操作按钮和滑块 */}
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: isMobile ? 'column' : 'row',
+            gap: isMobile ? 8 : 10,
+            alignItems: isMobile ? 'stretch' : 'center'
+          }}>
+            <div style={{ display: 'flex', gap: isMobile ? 6 : 8 }}>
+              <Button 
+                type="primary" 
+                onClick={handleReset}
+                size={isMobile ? 'small' : 'middle'}
+              >
+                重置
+              </Button>
+              <Button 
+                onClick={handleClearCache}
+                size={isMobile ? 'small' : 'middle'}
+              >
+                清除缓存
+              </Button>
+            </div>
+            
+            {!isMobile && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <label style={{ fontSize: 14 }}>数据量滑块:</label>
+                <Slider
+                  min={1000}
+                  max={100000}
+                  step={1000}
+                  value={dataSize}
+                  onChange={setDataSize}
+                  style={{ width: sliderWidth }}
+                />
+                <span>{dataSize} 条</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -451,10 +494,11 @@ const CanvasVirtualListPage = () => {
         <div
           ref={outerContainerRef}
           style={{
-            height: '500px',
+            height: containerHeight,
             border: '1px solid #ddd',
             position: 'relative', // Canvas 绝对定位的参照
-            overflow: 'hidden'    // 自己不滚动，滚动交给内部容器
+            overflow: 'hidden',    // 自己不滚动，滚动交给内部容器
+            backgroundColor: '#fafafa'
           }}
           onClick={handleCanvasClick}
         >
@@ -463,7 +507,8 @@ const CanvasVirtualListPage = () => {
             ref={containerRef}
             style={{
               height: '100%',
-              overflow: 'auto'
+              overflow: 'auto',
+              WebkitOverflowScrolling: 'touch'
             }}
             onScroll={handleScroll}
           >
@@ -499,14 +544,21 @@ const CanvasVirtualListPage = () => {
         </div>
 
         {/* 性能指标展示 */}
-        <div style={{ marginTop: '20px' }}>
-          <h3>性能指标</h3>
-          <p>总数据量: {dataSize} 条</p>
-          <p>瓦片大小: {tileSize} 项/瓦片</p>
-          <p>瓦片总数: {tileCount} 个</p>
-          <p>项高度: {itemHeight}px</p>
-          <p>瓦片像素高度: {TILE_PIXEL_HEIGHT}px</p>
-          <p>渲染策略: 离屏 Canvas 缓存瓦片，按需渲染可见瓦片</p>
+        <div style={{ marginTop: isMobile ? 12 : 20 }}>
+          <h3 style={{ fontSize: isMobile ? 14 : 16, marginBottom: isMobile ? 8 : 12 }}>
+            {!isMobile && '性能指标'}
+            {isMobile && `性能: ${dataSize}条 / ${tileSize}项瓦片 / ${tileCount}瓦片`}
+          </h3>
+          {!isMobile && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+              <p>总数据量: {dataSize} 条</p>
+              <p>瓦片大小: {tileSize} 项/瓦片</p>
+              <p>瓦片总数: {tileCount} 个</p>
+              <p>项高度: {itemHeight}px</p>
+              <p>瓦片像素高度: {TILE_PIXEL_HEIGHT}px</p>
+              <p>渲染策略: 离屏Canvas缓存</p>
+            </div>
+          )}
         </div>
       </Card>
     </div>

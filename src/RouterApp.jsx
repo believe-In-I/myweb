@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter, HashRouter, Routes, Route, NavLink, useLocation, useNavigate, Navigate, Outlet } from 'react-router-dom';
-import { Layout, Menu, Breadcrumb, Typography, Avatar, Dropdown, Space, ConfigProvider, App, Button, message } from 'antd';
-import { PictureOutlined, CopyOutlined, BoxPlotOutlined, FileDoneOutlined, FileWordOutlined, VideoCameraOutlined, AliwangwangOutlined, CloudUploadOutlined, CodeOutlined, LineChartOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined, MessageOutlined } from '@ant-design/icons';
+import { Layout, Menu, Breadcrumb, Typography, Avatar, Dropdown, Space, ConfigProvider, App, Button, message, Drawer } from 'antd';
+import { PictureOutlined, CopyOutlined, BoxPlotOutlined, FileDoneOutlined, FileWordOutlined, VideoCameraOutlined, AliwangwangOutlined, CloudUploadOutlined, CodeOutlined, LineChartOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined, MessageOutlined, MenuOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import ApiTestPage from './pages/ApiTestPage';
 import HeartPage from './pages/HeartPage';
@@ -25,6 +25,45 @@ import { logout, isAuthenticated, getUser } from './utils/auth';
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
 
+// 移动端断点
+const MOBILE_BREAKPOINT = 768;
+
+// 响应式检测 Hook
+const useResponsive = () => {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < MOBILE_BREAKPOINT : false
+  );
+  const [isTablet, setIsTablet] = useState(
+    typeof window !== 'undefined' 
+      ? window.innerWidth >= MOBILE_BREAKPOINT && window.innerWidth < 992 
+      : false
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < MOBILE_BREAKPOINT);
+      setIsTablet(width >= MOBILE_BREAKPOINT && width < 992);
+    };
+
+    // 初始检测
+    handleResize();
+
+    // 添加监听
+    window.addEventListener('resize', handleResize);
+    
+    // 监听屏幕方向变化（移动端横竖屏切换）
+    window.addEventListener('orientationchange', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []);
+
+  return { isMobile, isTablet };
+};
+
 // 路由配置
 const routes = [
   { path: '/home/apiTest', nameKey: 'menu.apiTest', icon: <CloudUploadOutlined /> },
@@ -42,47 +81,106 @@ const routes = [
 ];
 
 // 内容区域组件
-const ContentArea = () => {
+const ContentArea = ({ isMobile, isTablet }) => {
   const { t } = useTranslation();
+  const location = useLocation();
+
+  // 响应式边距和内边距
+  const contentMargin = isMobile ? 8 : isTablet ? 16 : 24;
+  const contentPadding = isMobile ? 12 : 24;
+  const contentHeight = isMobile ? 'calc(100vh - 120px)' : 'calc(100vh - 160px)';
+
+  // 获取当前页面名称
+  const currentRoute = routes.find(route => route.path === location.pathname);
+  const pageName = currentRoute ? t(currentRoute.nameKey) : '';
 
   return (
     <Content
       style={{
-        margin: '24px 16px',
-        padding: 24,
+        margin: `${contentMargin}px ${contentMargin}px`,
+        padding: contentPadding,
         minHeight: 280,
         background: '#fff',
-        borderRadius: '8px',
+        borderRadius: isMobile ? '8px' : '8px',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+        overflow: 'hidden',
       }}
     >
+      {/* 移动端顶部标题 */}
+      {isMobile && (
+        <div style={{
+          marginBottom: 12,
+          paddingBottom: 12,
+          borderBottom: '1px solid #f0f0f0',
+        }}>
+          <h2 style={{
+            margin: 0,
+            fontSize: 16,
+            fontWeight: 600,
+            color: '#333',
+          }}>
+            {pageName}
+          </h2>
+        </div>
+      )}
 
-
-      {/* 页面内容 style={{ height: 'calc(100vh - 220px)',*/}
-      <div style={{ height: 'calc(100vh - 160px)', overflow: 'auto' }}>
+      {/* 页面内容 */}
+      <div style={{ 
+        height: contentHeight, 
+        overflow: 'auto',
+        // 移动端优化滚动
+        ...(isMobile && {
+          WebkitOverflowScrolling: 'touch',
+        }),
+      }}>
         <Outlet />
       </div>
-
     </Content>
   );
 };
 
-// 侧边栏组件
-const Sidebar = () => {
-  const [collapsed, setCollapsed] = useState(false);
+// 移动端抽屉菜单组件
+const MobileDrawer = ({ visible, onClose, children }) => {
+  return (
+    <Drawer
+      title={
+        <span style={{ fontSize: 16, fontWeight: 600 }}>
+          导航菜单
+        </span>
+      }
+      placement="left"
+      onClose={onClose}
+      open={visible}
+      width={280}
+      styles={{
+        body: {
+          padding: 0,
+        },
+        header: {
+          background: '#001529',
+          borderBottom: '1px solid #1f2f3f',
+        },
+      }}
+      drawerStyle={{
+        background: '#001529',
+      }}
+      closeIcon={
+        <span style={{ color: '#fff', fontSize: 18 }}>×</span>
+      }
+    >
+      {children}
+    </Drawer>
+  );
+};
+
+// 移动端侧边栏内容
+const MobileSidebar = ({ onClose }) => {
   const { t } = useTranslation();
+  const location = useLocation();
 
   return (
-    <Sider
-      collapsible
-      collapsed={collapsed}
-      onCollapse={(value) => setCollapsed(value)}
-      width={200}
-      style={{
-        background: '#001529',
-        minHeight: '100vh',
-      }}
-    >
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {/* Logo 区域 */}
       <div
         style={{
           height: 64,
@@ -95,7 +193,79 @@ const Sidebar = () => {
           borderBottom: '1px solid #1f2f3f',
         }}
       >
+        {t('app.title')}
+      </div>
+      
+      {/* 菜单 */}
+      <Menu
+        mode="inline"
+        theme="dark"
+        style={{ 
+          borderRight: 0, 
+          flex: 1,
+          overflow: 'auto',
+        }}
+        selectedKeys={[location.pathname]}
+        items={routes.map((route) => ({
+          key: route.path,
+          icon: route.icon,
+          label: (
+            <NavLink 
+              to={route.path} 
+              onClick={onClose}
+              style={{
+                color: 'inherit',
+                textDecoration: 'none',
+                display: 'block',
+              }}
+            >
+              {t(route.nameKey)}
+            </NavLink>
+          ),
+        }))}
+      />
+    </div>
+  );
+};
+
+// 桌面端侧边栏组件
+const DesktopSidebar = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const { t } = useTranslation();
+
+  return (
+    <Sider
+      collapsible
+      collapsed={collapsed}
+      onCollapse={(value) => setCollapsed(value)}
+      width={200}
+      style={{
+        background: '#001529',
+        minHeight: '100vh',
+        // 响应式侧边栏宽度
+      }}
+      breakpoint="lg"
+      onBreakpoint={(broken) => {
+        if (broken) {
+          setCollapsed(true);
+        }
+      }}
+    >
+      <div
+        style={{
+          height: 64,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          fontSize: collapsed ? 16 : 18,
+          fontWeight: 'bold',
+          borderBottom: '1px solid #1f2f3f',
+          transition: 'font-size 0.2s',
+        }}
+      >
         {!collapsed && t('app.title')}
+        {collapsed && <MenuOutlined />}
       </div>
       <Menu
         mode="inline"
@@ -120,7 +290,7 @@ const Sidebar = () => {
 };
 
 // 顶部栏组件
-const TopHeader = () => {
+const TopHeader = ({ isMobile, onMenuClick }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const user = getUser();
@@ -160,6 +330,10 @@ const TopHeader = () => {
     },
   ];
 
+  // 获取当前页面名称
+  const currentRoute = routes.find(route => route.path === location.pathname);
+  const pageName = currentRoute ? t(currentRoute.nameKey) : '';
+
   return (
     <Header
       style={{
@@ -168,26 +342,71 @@ const TopHeader = () => {
         justifyContent: 'space-between',
         background: '#fff',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-        padding: '0 24px',
-        height: 64,
+        padding: isMobile ? '0 12px' : '0 24px',
+        height: isMobile ? 56 : 64,
+        lineHeight: isMobile ? '56px' : '64px',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <div style={{ fontSize: 18, fontWeight: 'bold', color: '#1890ff' }}>
-          {t('app.systemName')}
+      {/* 左侧区域 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 16 }}>
+        {/* 移动端汉堡菜单按钮 */}
+        {isMobile && (
+          <Button
+            type="text"
+            icon={<MenuOutlined style={{ fontSize: 18 }} />}
+            onClick={onMenuClick}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 40,
+              height: 40,
+              color: '#333',
+            }}
+          />
+        )}
+        
+        {/* 系统名称 */}
+        <div style={{ 
+          fontSize: isMobile ? 16 : 18, 
+          fontWeight: 'bold', 
+          color: '#1890ff',
+          whiteSpace: 'nowrap',
+        }}>
+          {isMobile ? '' : t('app.systemName')}
         </div>
-        {/* 面包屑导航 */}
-        <Breadcrumb items={[
-          { title: t('breadCrumb.home') },
-          { title: t(routes.find(route => route.path === location.pathname)?.nameKey || 'breadCrumb.unknown') },
-        ]} />
+        
+        {/* 面包屑导航 - 桌面端显示 */}
+        {!isMobile && (
+          <Breadcrumb 
+            items={[
+              { title: t('breadCrumb.home') },
+              { title: pageName },
+            ]} 
+          />
+        )}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <Space size="middle">
+
+      {/* 右侧区域 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 16 }}>
+        <Space size={isMobile ? 'small' : 'middle'}>
           <LanguageSwitcher />
-          <span style={{ color: '#666' }}>{user?.username || t('header.admin')}</span>
-          <Dropdown menu={{ items: menu }}>
-            <Avatar size="small" icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
+          {/* 用户名 - 移动端隐藏 */}
+          {!isMobile && (
+            <span style={{ color: '#666' }}>{user?.username || t('header.admin')}</span>
+          )}
+          <Dropdown menu={{ items: menu }} trigger={isMobile ? ['click'] : ['hover']}>
+            <Avatar 
+              size={isMobile ? 32 : 'small'} 
+              icon={<UserOutlined />} 
+              style={{ 
+                cursor: 'pointer',
+                background: '#1890ff',
+              }} 
+            />
           </Dropdown>
         </Space>
       </div>
@@ -197,6 +416,19 @@ const TopHeader = () => {
 
 // 主应用布局组件
 const MainLayout = () => {
+  const { isMobile, isTablet } = useResponsive();
+  const [drawerVisible, setDrawerVisible] = useState(false);
+
+  // 打开抽屉菜单
+  const showDrawer = useCallback(() => {
+    setDrawerVisible(true);
+  }, []);
+
+  // 关闭抽屉菜单
+  const closeDrawer = useCallback(() => {
+    setDrawerVisible(false);
+  }, []);
+
   const auth = isAuthenticated();
 
   if (!auth) {
@@ -205,13 +437,27 @@ const MainLayout = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      {/* 侧边栏 */}
-      <Sidebar />
-      <Layout style={{ flex: 1 }}>
+      {/* 移动端抽屉菜单 */}
+      {isMobile && (
+        <MobileDrawer visible={drawerVisible} onClose={closeDrawer}>
+          <MobileSidebar onClose={closeDrawer} />
+        </MobileDrawer>
+      )}
+
+      {/* 桌面端侧边栏 */}
+      {!isMobile && <DesktopSidebar />}
+
+      {/* 主内容区 */}
+      <Layout style={{ 
+        flex: 1,
+        minWidth: 0, // 防止flex子元素溢出
+        transition: 'margin-left 0.2s ease',
+      }}>
         {/* 顶部栏 */}
-        <TopHeader />
+        <TopHeader isMobile={isMobile} onMenuClick={showDrawer} />
+        
         {/* 内容区域 */}
-        <ContentArea />
+        <ContentArea isMobile={isMobile} isTablet={isTablet} />
       </Layout>
     </Layout>
   );

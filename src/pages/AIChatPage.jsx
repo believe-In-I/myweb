@@ -5,6 +5,7 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import 'github-markdown-css/github-markdown.css';
 import { aiChat } from '@/api';
+import useResponsive from '@/hooks/useResponsive';
 
 marked.use({ gfm: true });
 
@@ -43,6 +44,9 @@ const generateSystemPrompt = (identity) => {
 };
 
 export default function AIChatPage() {
+  // 响应式状态
+  const { isMobile, isTablet, isXs } = useResponsive();
+  
   // 加载保存的身份设定
   const getInitialIdentity = () => {
     try {
@@ -283,14 +287,31 @@ export default function AIChatPage() {
     return <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{content}</div>;
   };
 
+  // 响应式配置
+  const chatMaxWidth = isMobile ? (isXs ? '88%' : '82%') : '70%';
+  const messagePadding = isMobile ? '6px 12px' : '8px 16px';
+  const chatInputPadding = isMobile ? '12px 16px 16px' : '16px 20px 20px';
+  const avatarSize = isMobile ? 28 : 35;
+  const settingsButtonWidth = isMobile ? 32 : undefined;
+
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Card
-
         style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
         styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' } }}
       >
-        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', position: 'absolute', top: 0, left: 0, right: 0, padding: '12px 16px', zIndex: 1000 }}>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'flex-end', 
+          alignItems: 'center', 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          padding: isMobile ? '8px 12px' : '12px 16px', 
+          zIndex: 1000,
+          gap: isMobile ? 6 : 8,
+        }}>
           <Button
             type="text"
             icon={<SettingOutlined />}
@@ -298,18 +319,18 @@ export default function AIChatPage() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
+              gap: isMobile ? 0 : 6,
               color: '#666',
-              fontSize: 13,
+              fontSize: isMobile ? 12 : 13,
               height: 32,
-              padding: '10px 12px',
+              padding: isMobile ? '0 8px' : '10px 12px',
               borderRadius: 16,
               transition: 'all 0.2s',
               background: 'rgb(212 222 255)',
             }}
             className="hover-bg-gray"
           >
-            设置身份
+            {!isMobile && '设置身份'}
           </Button>
           <Popconfirm
             title="确认清空"
@@ -325,22 +346,22 @@ export default function AIChatPage() {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 6,
+                gap: isMobile ? 0 : 6,
                 color: '#666',
-                fontSize: 13,
+                fontSize: isMobile ? 12 : 13,
                 height: 32,
-                padding: '0 12px',
+                padding: isMobile ? '0 8px' : '0 12px',
                 borderRadius: 16,
                 transition: 'all 0.2s',
-                marginLeft: 10,
+                marginLeft: isMobile ? 4 : 10,
               }}
             >
-              清空对话
+              {!isMobile && '清空对话'}
             </Button>
           </Popconfirm>
         </div>
         {/* 消息列表 */}
-        <div style={{ flex: 1, overflow: 'auto', padding: '20px' }}>
+        <div style={{ flex: 1, overflow: 'auto', padding: isMobile ? '12px 8px' : '20px' }}>
           {messages.map(msg => (
             <div
               key={msg.id}
@@ -348,21 +369,22 @@ export default function AIChatPage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                marginBottom: 16
+                marginBottom: isMobile ? 12 : 16
               }}
             >
               {msg.role === 'assistant' && (
-                <Avatar src={identity.avatar} style={{ marginRight: 8, width: '35px', height: '35px' }} />
+                <Avatar src={identity.avatar} style={{ marginRight: isMobile ? 6 : 8, width: avatarSize, height: avatarSize }} />
               )}
               <div
                 style={{
-                  maxWidth: '70%',
-                  padding: '8px 16px',
+                  maxWidth: chatMaxWidth,
+                  padding: messagePadding,
                   borderRadius: '25px',
                   background: msg.role === 'user' ? '#1890ff' : '#fff',
                   color: msg.role === 'user' ? '#fff' : '#333',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                   wordBreak: 'break-word',
+                  fontSize: isMobile ? 13 : 14,
                 }}
               >
                 {msg.role === 'loading' ? (
@@ -371,11 +393,11 @@ export default function AIChatPage() {
                   renderContent(msg.content, msg.role, msg.id)
                 )}
                 {msg.role === 'assistant' && loading && msg.id === messages[messages.length - 1].id && (
-                  <span style={{ color: '#999', fontSize: 12 }}>正在输入...</span>
+                  <span style={{ color: '#999', fontSize: isMobile ? 10 : 12 }}>正在输入...</span>
                 )}
               </div>
               {msg.role === 'user' && (
-                <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#52c41a', marginLeft: 8 }} />
+                <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#52c41a', marginLeft: isMobile ? 6 : 8 }} />
               )}
             </div>
           ))}
@@ -383,7 +405,7 @@ export default function AIChatPage() {
         </div>
 
         {/* 输入区域 - DeepSeek 风格 */}
-        <div style={{ padding: '16px 20px 20px', background: '#fff' }}>
+        <div style={{ padding: chatInputPadding, background: '#fff' }}>
           <div
             className="ai-chat-input-wrap"
             style={{
@@ -391,8 +413,8 @@ export default function AIChatPage() {
               border: '1px solid #e5e5e5',
               background: '#fff',
               boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
-              padding: '14px 16px 12px',
-              minHeight: 52,
+              padding: isMobile ? '10px 12px 8px' : '14px 16px 12px',
+              minHeight: isMobile ? 44 : 52,
             }}
           >
             <Input.TextArea
@@ -406,11 +428,11 @@ export default function AIChatPage() {
                   handleSend();
                 }
               }}
-              autoSize={{ minRows: 1, maxRows: 6 }}
+              autoSize={{ minRows: 1, maxRows: isMobile ? 4 : 6 }}
               bordered={false}
               style={{
                 padding: 0,
-                fontSize: 15,
+                fontSize: isMobile ? 14 : 15,
                 lineHeight: 1.5,
                 resize: 'none',
               }}
@@ -428,7 +450,7 @@ export default function AIChatPage() {
                 display: 'flex',
                 justifyContent: 'flex-end',
                 alignItems: 'center',
-                gap: 8,
+                gap: isMobile ? 4 : 8,
                 marginTop: 4,
               }}
             >
@@ -437,7 +459,7 @@ export default function AIChatPage() {
                   color: '#8c8c8c',
                   cursor: 'pointer',
                   padding: 4,
-                  fontSize: 16,
+                  fontSize: isMobile ? 14 : 16,
                 }}
                 title="附件（暂未开放）"
               >
@@ -449,8 +471,8 @@ export default function AIChatPage() {
                   onClick={handleStop}
                   title="停止"
                   style={{
-                    width: 36,
-                    height: 36,
+                    width: isMobile ? 32 : 36,
+                    height: isMobile ? 32 : 36,
                     borderRadius: '50%',
                     border: 'none',
                     background: '#ff7875',
@@ -459,7 +481,7 @@ export default function AIChatPage() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: 16,
+                    fontSize: isMobile ? 14 : 16,
                   }}
                 >
                   <StopOutlined />
@@ -471,8 +493,8 @@ export default function AIChatPage() {
                   disabled={!inputValue.trim()}
                   title="发送"
                   style={{
-                    width: 36,
-                    height: 36,
+                    width: isMobile ? 32 : 36,
+                    height: isMobile ? 32 : 36,
                     borderRadius: '50%',
                     border: 'none',
                     background: inputValue.trim() ? '#b0c4ff' : '#e8e8e8',
@@ -481,7 +503,7 @@ export default function AIChatPage() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: 16,
+                    fontSize: isMobile ? 14 : 16,
                     transition: 'background 0.2s, color 0.2s',
                   }}
                 >
@@ -497,17 +519,17 @@ export default function AIChatPage() {
       {/* 身份设置弹窗 */}
       <Modal
         title={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 16, fontWeight: 600 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: isMobile ? 14 : 16, fontWeight: 600 }}>
             <div style={{
-              width: 32,
-              height: 32,
+              width: isMobile ? 28 : 32,
+              height: isMobile ? 28 : 32,
               borderRadius: 8,
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: '#fff',
-              fontSize: 16
+              fontSize: isMobile ? 14 : 16
             }}>
               <RobotOutlined />
             </div>
@@ -519,13 +541,13 @@ export default function AIChatPage() {
         onCancel={() => setIdentityModalVisible(false)}
         okText="保存"
         cancelText="取消"
-        width={480}
+        width={isMobile ? '95%' : 480}
         destroyOnClose
-        bodyStyle={{ padding: '24px 24px 16px' }}
+        bodyStyle={{ padding: isMobile ? '16px 12px 12px' : '24px 24px 16px' }}
         styles={{
-          header: { padding: '20px 24px 0' },
-          body: { padding: '24px 24px 16px' },
-          footer: { padding: '16px 24px 20px', borderTop: '1px solid #f0f0f0' }
+          header: { padding: isMobile ? '16px 12px 0' : '20px 24px 0' },
+          body: { padding: isMobile ? '16px 12px 12px' : '24px 24px 16px' },
+          footer: { padding: isMobile ? '12px 12px 16px' : '16px 24px 20px', borderTop: '1px solid #f0f0f0' }
         }}
       >
         <Form
@@ -533,106 +555,11 @@ export default function AIChatPage() {
           layout="vertical"
           initialValues={identity}
         >
-          {/* 头像区域 */}
-          {/* <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            marginBottom: 24,
-            padding: '20px 0',
-            background: 'linear-gradient(180deg, #f8fafc 0%, #fff 100%)',
-            borderRadius: 12,
-            border: '1px solid #e8ecf0'
-          }}>
-            <div style={{ position: 'relative', marginBottom: 8 }}>
-              <Avatar
-                src={previewAvatar}
-                size={80}
-                style={{
-                  border: '3px solid #fff',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                  background: '#f0f0f0'
-                }}
-              />
-              <div style={{
-                position: 'absolute',
-                bottom: -2,
-                right: -2,
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                border: '2px solid #fff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fff',
-                fontSize: 12,
-                boxShadow: '0 2px 8px rgba(102,126,234,0.4)'
-              }}>
-                <CameraOutlined style={{ fontSize: 12 }} />
-              </div>
-            </div> */}
-
-            {/* 头像操作按钮 */}
-            {/* <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-              <Upload
-                name="avatar"
-                showUploadList={false}
-                beforeUpload={() => false}
-                onChange={(info) => {
-                  const file = info.file.originFileObj || info.file;
-                  if (file && file.path) {
-                    const filePath = 'file:///' + file.path.replace(/\\/g, '/');
-                    setPreviewAvatar(filePath);
-                    form.setFieldsValue({ avatar: filePath });
-                  } else if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                      setPreviewAvatar(e.target.result);
-                      form.setFieldsValue({ avatar: e.target.result });
-                    };
-                    reader.readAsDataURL(file);
-                  }
-                }}
-              >
-                <Button size="small" icon={<UploadOutlined />} style={{ fontSize: 12, borderRadius: 6 }}>
-                  上传图片
-                </Button>
-              </Upload>
-              <Button
-                size="small"
-                icon={<LinkOutlined />}
-                style={{ fontSize: 12, borderRadius: 6 }}
-                onClick={() => {
-                  const url = prompt('请输入图片URL地址：');
-                  if (url && url.trim()) {
-                    setPreviewAvatar(url.trim());
-                    form.setFieldsValue({ avatar: url.trim() });
-                  }
-                }}
-              >
-                输入链接
-              </Button>
-              <Button
-                size="small"
-                icon={<SwapOutlined />}
-                style={{ fontSize: 12, borderRadius: 6 }}
-                onClick={() => {
-                  setPreviewAvatar('/AiImage.jpg');
-                  form.setFieldsValue({ avatar: '/AiImage.jpg' });
-                }}
-              >
-                恢复默认
-              </Button>
-            </div>
-          </div> */}
-
           {/* 基本信息卡片 */}
           <div style={{
             background: '#fafbfc',
             borderRadius: 12,
-            padding: '16px 16px 8px',
+            padding: isMobile ? '12px 10px 4px' : '16px 16px 8px',
             marginBottom: 16
           }}>
             <div style={{
@@ -645,38 +572,41 @@ export default function AIChatPage() {
             }}>
               基本信息
             </div>
-            <div style={{ display: 'flex', gap: 12 }}>
+            <div style={{ display: 'flex', gap: isMobile ? 8 : 12, flexWrap: 'wrap' }}>
               <Form.Item
                 name="name"
                 rules={[{ required: true, message: '请输入姓名' }]}
-                style={{ flex: 1, marginBottom: 8 }}
+                style={{ flex: 1, marginBottom: isMobile ? 4 : 8, minWidth: 100 }}
               >
                 <Input
                   prefix={<UserOutlined style={{ color: '#bfbfbf' }} />}
                   placeholder="姓名"
                   style={{ borderRadius: 8 }}
+                  size={isMobile ? 'small' : 'middle'}
                 />
               </Form.Item>
 
               <Form.Item
                 name="age"
                 rules={[{ required: true, message: '请输入年龄' }]}
-                style={{ width: 80, marginBottom: 8 }}
+                style={{ width: isMobile ? 60 : 80, marginBottom: isMobile ? 4 : 8 }}
               >
                 <Input
                   placeholder="年龄"
                   style={{ borderRadius: 8 }}
+                  size={isMobile ? 'small' : 'middle'}
                 />
               </Form.Item>
 
               <Form.Item
                 name="gender"
                 rules={[{ required: true, message: '请选择性别' }]}
-                style={{ width: 90, marginBottom: 8 }}
+                style={{ width: isMobile ? 70 : 90, marginBottom: isMobile ? 4 : 8 }}
               >
                 <Select
                   placeholder="性别"
                   style={{ borderRadius: 8 }}
+                  size={isMobile ? 'small' : 'middle'}
                 >
                   <Select.Option value="男">男</Select.Option>
                   <Select.Option value="女">女</Select.Option>
@@ -690,17 +620,17 @@ export default function AIChatPage() {
           <div style={{
             background: '#fafbfc',
             borderRadius: 12,
-            padding: '16px',
+            padding: isMobile ? '12px 10px' : '16px',
             marginBottom: 16,
             display:'flex',
             flexDirection:'column',
-            gap: 10,
+            gap: isMobile ? 8 : 10,
           }}>
             <div style={{
               fontSize: 12,
               fontWeight: 600,
               color: '#667eea',
-              marginBottom: 12,
+              marginBottom: isMobile ? 8 : 12,
               textTransform: 'uppercase',
               letterSpacing: 1
             }}>
@@ -709,11 +639,11 @@ export default function AIChatPage() {
             <Form.Item
               name="bio"
               rules={[{ required: true, message: '请输入简介' }]}
-              style={{ marginBottom: 12 }}
+              style={{ marginBottom: isMobile ? 8 : 12 }}
             >
               <Input.TextArea
                 placeholder="请输入AI助手的简介"
-                rows={3}
+                rows={isMobile ? 2 : 3}
                 maxLength={200}
                 showCount
                 style={{ borderRadius: 8 }}
@@ -727,7 +657,7 @@ export default function AIChatPage() {
             >
               <Input.TextArea
                 placeholder="请描述AI助手的性格特点和爱好"
-                rows={3}
+                rows={isMobile ? 2 : 3}
                 maxLength={200}
                 showCount
                 style={{ borderRadius: 8 }}

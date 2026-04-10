@@ -1,2 +1,503 @@
-html,body,#root{height:100%;margin:0}
-body{font-family:Arial,Helvetica,sans-serif}
+/* ============================================
+   全局响应式样式 - 移动端适配
+   ============================================ */
+
+/* CSS Reset */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+  background-color: #f0f2f5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ============================================
+   响应式断点定义
+   ============================================ */
+:root {
+  /* 响应式断点 */
+  --breakpoint-xs: 480px;   /* 超小屏幕 - 大屏手机 */
+  --breakpoint-sm: 576px;  /* 小屏幕 - 手机 */
+  --breakpoint-md: 768px;  /* 中等屏幕 - 平板 */
+  --breakpoint-lg: 992px;  /* 大屏幕 - 小笔记本 */
+  --breakpoint-xl: 1200px; /* 超大屏幕 - 桌面 */
+  --breakpoint-xxl: 1600px; /* 极大屏幕 */
+
+  /* 间距变量 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* 侧边栏宽度 */
+  --sider-width: 200px;
+  --sider-collapsed-width: 80px;
+
+  /* 顶部栏高度 */
+  --header-height: 64px;
+}
+
+/* ============================================
+   移动端基础适配
+   ============================================ */
+@media (max-width: 767px) {
+  body {
+    font-size: 13px;
+  }
+
+  /* 隐藏桌面端滚动条，优化移动端体验 */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+/* ============================================
+   平板适配
+   ============================================ */
+@media (min-width: 768px) and (max-width: 991px) {
+  :root {
+    --sider-width: 160px;
+  }
+}
+
+/* ============================================
+   移动端内容区域优化
+   ============================================ */
+@media (max-width: 767px) {
+  /* 内容区域移动端边距调整 */
+  .ant-layout-content {
+    margin: 8px !important;
+    padding: 12px !important;
+  }
+
+  /* 减小移动端内边距 */
+  .ant-card {
+    padding: 12px !important;
+  }
+
+  /* 表单移动端适配 */
+  .ant-form-item {
+    margin-bottom: 12px;
+  }
+
+  /* 按钮移动端适配 */
+  .ant-btn {
+    min-height: 36px;
+    padding: 4px 12px;
+    font-size: 13px;
+  }
+
+  /* 输入框移动端适配 */
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-select-selector {
+    min-height: 36px !important;
+    font-size: 14px !important;
+  }
+
+  /* Modal 移动端适配 */
+  .ant-modal {
+    max-width: calc(100vw - 32px) !important;
+    margin: 8px auto !important;
+  }
+
+  .ant-modal-content {
+    padding: 16px !important;
+  }
+
+  .ant-modal-header {
+    padding: 12px 16px !important;
+  }
+
+  .ant-modal-body {
+    padding: 16px !important;
+  }
+
+  .ant-modal-footer {
+    padding: 12px 16px !important;
+  }
+
+  /* Drawer 移动端适配 */
+  .ant-drawer-content {
+    padding-top: 0 !important;
+  }
+
+  /* Table 移动端适配 - 启用水平滚动 */
+  .ant-table {
+    font-size: 12px !important;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 8px 4px !important;
+    font-size: 12px;
+  }
+
+  /* 隐藏表格中不重要的列 */
+  .ant-table-wrapper .ant-table {
+    overflow-x: auto !important;
+  }
+
+  /* Select 下拉菜单移动端适配 */
+  .ant-select-dropdown {
+    max-width: calc(100vw - 32px) !important;
+    left: 8px !important;
+    right: 8px !important;
+  }
+
+  /* Tabs 移动端适配 */
+  .ant-tabs-nav {
+    font-size: 13px !important;
+  }
+
+  .ant-tabs-tab {
+    padding: 8px 0 !important;
+    font-size: 13px !important;
+  }
+
+  /* Tag 移动端适配 */
+  .ant-tag {
+    font-size: 11px !important;
+    padding: 0 6px !important;
+    margin: 2px !important;
+  }
+
+  /* Breadcrumb 移动端隐藏或简化 */
+  .ant-breadcrumb {
+    display: none !important;
+  }
+
+  /* Card 移动端适配 */
+  .ant-card {
+    border-radius: 8px !important;
+  }
+
+  .ant-card-head {
+    padding: 12px 12px !important;
+    min-height: auto !important;
+  }
+
+  .ant-card-head-title {
+    font-size: 14px !important;
+  }
+
+  .ant-card-body {
+    padding: 12px !important;
+  }
+
+  /* Descriptions 移动端适配 */
+  .ant-descriptions-item-label {
+    font-size: 12px !important;
+    padding: 6px 8px !important;
+  }
+
+  .ant-descriptions-item-content {
+    font-size: 12px !important;
+    padding: 6px 8px !important;
+  }
+
+  /* DatePicker 移动端适配 */
+  .ant-picker-dropdown {
+    left: 8px !important;
+    right: 8px !important;
+  }
+
+  .ant-picker-panel-container {
+    max-width: calc(100vw - 16px) !important;
+  }
+}
+
+/* ============================================
+   超小屏幕手机适配
+   ============================================ */
+@media (max-width: 479px) {
+  /* 进一步减小间距 */
+  :root {
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+  }
+
+  /* Modal 全屏适配 */
+  .ant-modal {
+    max-width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    top: 0 !important;
+  }
+
+  .ant-modal-content {
+    border-radius: 0 !important;
+    min-height: 100vh !important;
+  }
+
+  /* 表单项全宽 */
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+  /* 代码块移动端适配 */
+  pre {
+    font-size: 12px !important;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  code {
+    font-size: 12px !important;
+  }
+}
+
+/* ============================================
+   触摸优化
+   ============================================ */
+@media (max-width: 767px) {
+  /* 增大可点击元素最小尺寸 */
+  button,
+  a,
+  .ant-btn,
+  .ant-dropdown-trigger,
+  .ant-pagination-item,
+  .ant-select-selector,
+  .ant-checkbox-wrapper {
+    min-height: 36px;
+    min-width: 36px;
+  }
+
+  /* 移除按钮点击时的边框效果 */
+  button:focus,
+  .ant-btn:focus {
+    box-shadow: none;
+  }
+
+  /* 禁用 text-size-adjust，优化中文显示 */
+  * {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* 优化滚动体验 */
+  .ant-layout-content {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 禁止长按选择 */
+  button, a, img {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* 输入框允许选择 */
+  input, textarea {
+    -webkit-user-select: auto;
+    user-select: auto;
+  }
+}
+
+/* ============================================
+   安全区域适配（iPhone X 及以上）
+   ============================================ */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .ant-layout-footer {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* ============================================
+   平板横屏适配
+   ============================================ */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  :root {
+    --sider-width: 160px;
+    --sider-collapsed-width: 64px;
+  }
+}
+
+/* ============================================
+   Ant Design 组件响应式覆盖
+   ============================================ */
+
+/* Layout 响应式 */
+@media (max-width: 767px) {
+  .ant-layout-sider {
+    position: fixed !important;
+    z-index: 1000;
+  }
+
+  .ant-layout {
+    transition: all 0.2s ease;
+  }
+}
+
+/* Menu 响应式 */
+@media (max-width: 767px) {
+  .ant-menu-inline {
+    border-right: none !important;
+  }
+
+  .ant-menu-dark {
+    background: #001529 !important;
+  }
+}
+
+/* InputNumber 响应式 */
+@media (max-width: 767px) {
+  .ant-input-number {
+    width: 100% !important;
+    min-width: auto !important;
+  }
+}
+
+/* Switch 响应式 */
+@media (max-width: 767px) {
+  .ant-switch {
+    min-width: 44px !important;
+    height: 24px !important;
+  }
+}
+
+/* Checkbox/Radio 响应式 */
+@media (max-width: 767px) {
+  .ant-checkbox-wrapper,
+  .ant-radio-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 8px;
+  }
+}
+
+/* Divider 响应式 */
+@media (max-width: 767px) {
+  .ant-divider {
+    margin: 12px 0 !important;
+  }
+}
+
+/* Avatar 响应式 */
+@media (max-width: 767px) {
+  .ant-avatar {
+    width: 32px !important;
+    height: 32px !important;
+    line-height: 32px !important;
+  }
+}
+
+/* Badge 响应式 */
+@media (max-width: 767px) {
+  .ant-badge-count {
+    font-size: 10px !important;
+    min-width: 16px !important;
+    height: 16px !important;
+    line-height: 16px !important;
+  }
+}
+
+/* Tooltip 移动端禁用（改用 Popover） */
+@media (max-width: 767px) {
+  .ant-tooltip {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   滚动条样式
+   ============================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ============================================
+   响应式工具类
+   ============================================ */
+.hide-on-mobile {
+  display: block;
+}
+
+.show-on-mobile {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  .show-on-mobile {
+    display: block !important;
+  }
+
+  .show-on-mobile-inline {
+    display: inline !important;
+  }
+
+  .show-on-mobile-flex {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .show-on-desktop-inline {
+    display: inline !important;
+  }
+}
+
+/* ============================================
+   动画效果
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   打印样式（隐藏移动端不需要的内容）
+   ============================================ */
+@media print {
+  .ant-layout-sider,
+  .ant-layout-header {
+    display: none !important;
+  }
+
+  .ant-layout-content {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

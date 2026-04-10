@@ -243,6 +243,10 @@
 
 /* 响应式 */
 @media (max-width: 768px) {
+  .feishu-editor-page {
+    padding: 12px;
+  }
+
   .feishu-editor-toolbar {
     padding: 6px 8px;
   }
@@ -252,19 +256,84 @@
     height: 28px;
   }
 
+  .feishu-editor-toolbar-group .feishu-editor-toolbar-btn .toolbar-text {
+    font-size: 12px;
+  }
+
   .feishu-editor-content {
     padding: 16px;
+    min-height: 300px;
+    font-size: 13px;
   }
 
   .feishu-editor-content h1 {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .feishu-editor-content h2 {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .feishu-editor-content h3 {
     font-size: 16px;
+  }
+
+  .feishu-editor-statusbar {
+    font-size: 11px;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .feishu-editor-page {
+    padding: 8px;
+  }
+
+  .feishu-editor-toolbar {
+    padding: 4px 6px;
+    gap: 2px;
+  }
+
+  .feishu-editor-toolbar-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .feishu-editor-toolbar-group .feishu-editor-toolbar-btn .toolbar-text {
+    font-size: 11px;
+  }
+
+  .feishu-editor-content {
+    padding: 12px;
+    min-height: 250px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .feishu-editor-content h1 {
+    font-size: 20px;
+  }
+
+  .feishu-editor-content h2 {
+    font-size: 16px;
+  }
+
+  .feishu-editor-content h3 {
+    font-size: 14px;
+  }
+
+  .feishu-editor-content pre {
+    padding: 12px;
+    font-size: 12px;
+  }
+
+  .feishu-editor-content pre code {
+    font-size: 12px;
+  }
+
+  .feishu-editor-statusbar {
+    padding: 6px 8px;
+    font-size: 10px;
+    gap: 6px;
   }
 }

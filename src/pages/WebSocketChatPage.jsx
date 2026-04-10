@@ -28,6 +28,7 @@ import {
   PaperClipOutlined,
 } from '@ant-design/icons';
 import { ossUploadChat } from '@/api';
+import useResponsive from '@/hooks/useResponsive';
 
 const { Text } = Typography;
 
@@ -75,7 +76,7 @@ const EMOJI_NAME_MAP = {
   月亮: '🌙',
   太阳: '☀️',
   庆祝: '🎉',
-  666: '6️⃣6️⃣6️⃣',
+  666: '6️⃣',
   棒: '👍',
   OK: '👌',
   加油: '💪',
@@ -147,6 +148,9 @@ function msgTime(m) {
 }
 
 export default function WebSocketChatPage() {
+  // 响应式状态
+  const { isMobile, isTablet, isXs } = useResponsive();
+  
   const [messages, setMessages] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -411,12 +415,12 @@ export default function WebSocketChatPage() {
 
   const linkColor = (self) => (self ? 'rgba(255,255,255,0.92)' : undefined);
 
-  const renderPayload = (m, selfBubble = false) => {
+  const renderPayload = (m, selfBubble = false, isMobile = false) => {
     const { type, payload } = m;
 
     if (type === MsgType.SYSTEM) {
       return (
-        <Text type="secondary" style={{ fontSize: 12 }}>
+        <Text type="secondary" style={{ fontSize: isMobile ? 11 : 12 }}>
           {payload?.content}
         </Text>
       );
@@ -424,7 +428,7 @@ export default function WebSocketChatPage() {
 
     if (type === MsgType.TEXT) {
       return (
-        <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', textAlign: 'left' }}>
+        <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', textAlign: 'left', fontSize: isMobile ? 13 : 14 }}>
           {renderBracketText(payload?.content)}
         </div>
       );
@@ -435,7 +439,7 @@ export default function WebSocketChatPage() {
       const inner = id.replace(/^\[|\]$/g, '');
       const char = EMOJI_NAME_MAP[inner] || id || '🙂';
       return (
-        <span style={{ fontSize: 40, lineHeight: 1 }} title={payload?.description || inner}>
+        <span style={{ fontSize: isMobile ? 32 : 40, lineHeight: 1 }} title={payload?.description || inner}>
           {char}
         </span>
       );
@@ -443,18 +447,20 @@ export default function WebSocketChatPage() {
 
     if (type === MsgType.IMAGE) {
       const url = payload?.thumbnail || payload?.url;
+      const imgMaxWidth = isMobile ? 180 : 220;
+      const imgMaxHeight = isMobile ? 140 : 180;
       return (
         <div>
           <img
             src={url}
             alt={payload?.originalName}
-            style={{ maxWidth: 220, maxHeight: 180, borderRadius: 8, cursor: 'pointer', display: 'block' }}
+            style={{ maxWidth: imgMaxWidth, maxHeight: imgMaxHeight, borderRadius: 8, cursor: 'pointer', display: 'block' }}
             onClick={() => setPreviewImage({ open: true, url: payload?.url, name: payload?.originalName || 'image' })}
           />
           <Button
             type="link"
             size="small"
-            style={{ color: linkColor(selfBubble), paddingLeft: 0 }}
+            style={{ color: linkColor(selfBubble), paddingLeft: 0, fontSize: isMobile ? 11 : 12 }}
             icon={<DownloadOutlined />}
             onClick={() => downloadByUrl(payload?.url, payload?.originalName || 'image.jpg')}
           >
@@ -467,11 +473,11 @@ export default function WebSocketChatPage() {
     if (type === MsgType.VIDEO) {
       return (
         <div>
-          <video src={payload?.url} controls style={{ maxWidth: 280, maxHeight: 200, borderRadius: 8, display: 'block' }} />
+          <video src={payload?.url} controls style={{ maxWidth: isMobile ? 200 : 280, maxHeight: isMobile ? 150 : 200, borderRadius: 8, display: 'block' }} />
           <Button
             type="link"
             size="small"
-            style={{ color: linkColor(selfBubble), paddingLeft: 0 }}
+            style={{ color: linkColor(selfBubble), paddingLeft: 0, fontSize: isMobile ? 11 : 12 }}
             icon={<DownloadOutlined />}
             onClick={() => downloadByUrl(payload?.url, payload?.originalName || 'video.mp4')}
           >
@@ -484,7 +490,7 @@ export default function WebSocketChatPage() {
     if (type === MsgType.FILE) {
       return (
         <Space direction="vertical" size={4} style={{ alignItems: 'flex-start' }}>
-          <Text ellipsis style={{ maxWidth: 240, color: selfBubble ? '#fff' : undefined }}>
+          <Text ellipsis style={{ maxWidth: isMobile ? 180 : 240, color: selfBubble ? '#fff' : undefined, fontSize: isMobile ? 12 : 14 }}>
             📎 {payload?.originalName || payload?.fileName}
           </Text>
           <Button
@@ -506,12 +512,12 @@ export default function WebSocketChatPage() {
         <audio
           src={payload?.url}
           controls
-          style={{ width: 220, height: 36, verticalAlign: 'middle' }}
+          style={{ width: isMobile ? 180 : 220, height: 36, verticalAlign: 'middle' }}
         />
       );
     }
 
-    return <Text type="secondary">未知消息</Text>;
+    return <Text type="secondary" style={{ fontSize: isMobile ? 12 : 14 }}>未知消息</Text>;
   };
 
   const saveUsername = () => {
@@ -521,62 +527,104 @@ export default function WebSocketChatPage() {
     setSettingsOpen(false);
   };
 
-  const emojiPanel = (
-    <div style={{ width: 280, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
-      {EMOJI_QUICK_UNIQUE.map((name) => (
-        <button
-          key={name}
-          type="button"
-          title={name}
-          onClick={() => insertEmojiBracket(name)}
-          style={{
-            border: '1px solid #f0f0f0',
-            borderRadius: 8,
-            padding: 6,
-            cursor: 'pointer',
-            background: '#fff',
-            fontSize: 20,
-          }}
-        >
-          {EMOJI_NAME_MAP[name] || name}
-        </button>
-      ))}
-      <div style={{ gridColumn: '1 / -1', marginTop: 8, fontSize: 12, color: '#999' }}>
-        点击插入 [表情名]；也可直接发送纯表情：
-        <Button type="link" size="small" onClick={() => sendEmojiOnly('微笑')}>
-          发「微笑」
-        </Button>
+  const emojiPanel = (isMobilePanel) => {
+    const cols = isMobilePanel ? 6 : 7;
+    const emojiItemStyle = {
+      border: '1px solid #f0f0f0',
+      borderRadius: 8,
+      padding: isMobilePanel ? 4 : 6,
+      cursor: 'pointer',
+      background: '#fff',
+      fontSize: isMobilePanel ? 18 : 20,
+    };
+    
+    return (
+      <div style={{ 
+        width: emojiPanelWidth,
+        maxHeight: 320,
+        overflowY: 'auto',
+        overflowX: 'hidden',
+      }}>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: `repeat(${cols}, 1fr)`, 
+          gap: 6,
+          paddingBottom: 8,
+        }}>
+          {EMOJI_QUICK_UNIQUE.map((name) => (
+            <button
+              key={name}
+              type="button"
+              title={name}
+              onClick={() => insertEmojiBracket(name)}
+              style={emojiItemStyle}
+            >
+              {EMOJI_NAME_MAP[name] || name}
+            </button>
+          ))}
+        </div>
+        <div style={{ 
+          gridColumn: '1 / -1', 
+          marginTop: 8, 
+          fontSize: 12, 
+          color: '#999',
+          paddingTop: 8,
+          borderTop: '1px solid #f0f0f0',
+        }}>
+          点击插入 [表情名]；
+          <Button type="link" size="small" onClick={() => sendEmojiOnly('微笑')}>
+            发「微笑」
+          </Button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
+
+  // 响应式配置
+  const chatMaxWidth = isMobile ? (isXs ? '88%' : '82%') : '75%';
+  const chatPadding = isMobile ? '8px 12px' : '10px 14px';
+  const chatInputPadding = isMobile ? '12px 16px 16px' : '16px 20px 20px';
+  const chatAreaPadding = isMobile ? 8 : 16;
+  const avatarSize = isMobile ? 28 : 36;
+  const emojiPanelWidth = isMobile ? 260 : 280;
+  const drawerWidth = isMobile ? '85%' : 400;
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: 480 }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: isMobile ? 400 : 480 }}>
       <Card
         size="small"
         title={
-          <Space>
-            <span>实时聊天</span>
+          <Space wrap size={isMobile ? "small" : "middle"}>
+            <span style={{ fontSize: isMobile ? 14 : 16 }}>实时聊天</span>
             <Badge status={connected ? 'success' : 'default'} text={connecting ? '连接中…' : connected ? '已连接' : '未连接'} />
-            <Button type="text" icon={<TeamOutlined />} size="small">
-              在线 {onlineUsers.length} 人
-            </Button>
+            {!isMobile && (
+              <Button type="text" icon={<TeamOutlined />} size="small">
+                在线 {onlineUsers.length} 人
+              </Button>
+            )}
           </Space>
         }
         extra={
-          <Space>
-            <Button icon={<HistoryOutlined />} onClick={() => setHistoryOpen(true)}>
-              聊天记录
-            </Button>
-            <Button icon={<SettingOutlined />} onClick={() => setSettingsOpen(true)}>
-              昵称
-            </Button>
-          </Space>
+          isMobile ? (
+            <Space>
+              <Button type="text" icon={<SettingOutlined />} size="small" onClick={() => setSettingsOpen(true)} />
+              <Button type="text" icon={<HistoryOutlined />} size="small" onClick={() => setHistoryOpen(true)} />
+            </Space>
+          ) : (
+            <Space>
+              <Button icon={<HistoryOutlined />} onClick={() => setHistoryOpen(true)}>
+                聊天记录
+              </Button>
+              <Button icon={<SettingOutlined />} onClick={() => setSettingsOpen(true)}>
+                昵称
+              </Button>
+            </Space>
+          )
         }
         styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' } }}
         style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
       >
-        <div style={{ flex: 1, overflow: 'auto', padding: 16, background: '#f7f8fa' }}>
+        <div style={{ flex: 1, overflow: 'auto', padding: chatAreaPadding, background: '#f7f8fa', WebkitOverflowScrolling: 'touch' }}>
           {uploading && (
             <div style={{ textAlign: 'center', padding: 8 }}>
               <Spin size="small" /> 上传中…
@@ -589,8 +637,8 @@ export default function WebSocketChatPage() {
             if (isSystem) {
               return (
                 <div key={m.id} style={{ textAlign: 'center', margin: '8px 0' }}>
-                  {renderPayload(m, false)}
-                  <div style={{ fontSize: 11, color: '#bbb' }}>{msgTime(m)}</div>
+                  {renderPayload(m, false, isMobile)}
+                  <div style={{ fontSize: 10, color: '#bbb' }}>{msgTime(m)}</div>
                 </div>
               );
             }
@@ -600,37 +648,38 @@ export default function WebSocketChatPage() {
                 style={{
                   display: 'flex',
                   justifyContent: isSelf ? 'flex-end' : 'flex-start',
-                  marginBottom: 12,
+                  marginBottom: isMobile ? 8 : 12,
                   alignItems: 'flex-start',
-                  gap: 8,
+                  gap: isMobile ? 6 : 8,
                 }}
               >
-                {!isSelf && <Avatar icon={<UserOutlined />} src={p.avatar} style={{ backgroundColor: '#1890ff' }} />}
+                {!isSelf && <Avatar icon={<UserOutlined />} src={p.avatar} style={{ backgroundColor: '#1890ff', width: avatarSize, height: avatarSize }} />}
                 <div
                   style={{
-                    maxWidth: '75%',
-                    padding: '10px 14px',
+                    maxWidth: chatMaxWidth,
+                    padding: chatPadding,
                     borderRadius: 12,
                     background: isSelf ? '#1890ff' : '#fff',
                     color: isSelf ? '#fff' : '#333',
                     boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                    fontSize: isMobile ? 13 : 14,
                   }}
                 >
                   {!isSelf && (
-                    <div style={{ fontSize: 12, opacity: 0.85, marginBottom: 4 }}>
+                    <div style={{ fontSize: isMobile ? 11 : 12, opacity: 0.85, marginBottom: 4 }}>
                       {p.username || '用户'}
                     </div>
                   )}
-                  <div style={{ color: isSelf ? '#fff' : undefined }}>{renderPayload(m, isSelf)}</div>
-                  <div style={{ fontSize: 11, opacity: 0.65, marginTop: 6 }}>{msgTime(m)}</div>
+                  <div style={{ color: isSelf ? '#fff' : undefined }}>{renderPayload(m, isSelf, isMobile)}</div>
+                  <div style={{ fontSize: 10, opacity: 0.65, marginTop: 4 }}>{msgTime(m)}</div>
                 </div>
-                {isSelf && <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#52c41a' }} />}
+                {isSelf && <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#52c41a', width: avatarSize, height: avatarSize }} />}
               </div>
             );
           })}
         </div>
 
-        <div style={{ padding: '16px 20px 20px', background: '#fff' }}>
+        <div style={{ padding: chatInputPadding, background: '#fff' }}>
           <div
             className="ws-chat-input-wrap"
             style={{
@@ -638,8 +687,8 @@ export default function WebSocketChatPage() {
               border: '1px solid #e5e5e5',
               background: '#fff',
               boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-              padding: '14px 16px 12px',
-              minHeight: 52,
+              padding: isMobile ? '10px 12px 8px' : '14px 16px 12px',
+              minHeight: isMobile ? 44 : 52,
             }}
           >
             <Input.TextArea
@@ -653,12 +702,12 @@ export default function WebSocketChatPage() {
                   handleSendText();
                 }
               }}
-              autoSize={{ minRows: 1, maxRows: 6 }}
+              autoSize={{ minRows: 1, maxRows: isMobile ? 4 : 6 }}
               bordered={false}
               disabled={!connected}
               style={{
                 padding: 0,
-                fontSize: 15,
+                fontSize: isMobile ? 14 : 15,
                 lineHeight: 1.5,
                 resize: 'none',
               }}
@@ -676,32 +725,30 @@ export default function WebSocketChatPage() {
                 display: 'flex',
                 justifyContent: 'flex-end',
                 alignItems: 'center',
-                gap: 4,
+                gap: isMobile ? 2 : 4,
                 marginTop: 4,
               }}
             >
-              <Popover content={emojiPanel} title="表情（插入 [名称]）" trigger="click">
-                <Button type="text" icon={<SmileOutlined style={{ fontSize: 16 }} />} />
+              <Popover content={emojiPanel(isMobile)} title="表情（插入 [名称]）" trigger="click">
+                <Button type="text" icon={<SmileOutlined style={{ fontSize: isMobile ? 14 : 16 }} />} />
               </Popover>
-              <Button type="text" icon={<PictureOutlined style={{ fontSize: 16 }} />} onClick={() => imageInputRef.current?.click()} />
-              <Button type="text" icon={<VideoCameraOutlined style={{ fontSize: 16 }} />} onClick={() => videoInputRef.current?.click()} />
-              <Button type="text" icon={<FolderOpenOutlined style={{ fontSize: 16 }} />} onClick={() => fileInputRef.current?.click()} />
+              <Button type="text" icon={<PictureOutlined style={{ fontSize: isMobile ? 14 : 16 }} />} onClick={() => imageInputRef.current?.click()} />
+              <Button type="text" icon={<FolderOpenOutlined style={{ fontSize: isMobile ? 14 : 16 }} />} onClick={() => fileInputRef.current?.click()} />
               <Button
                 type="text"
                 danger={recording}
-                icon={<AudioOutlined style={{ fontSize: 16 }} />}
+                icon={<AudioOutlined style={{ fontSize: isMobile ? 14 : 16 }} />}
                 onClick={toggleRecord}
                 title={recording ? '结束录音并发送' : '点击开始录音'}
               />
-              <Button type="text" icon={<HistoryOutlined style={{ fontSize: 16 }} />} onClick={() => setHistoryOpen(true)} />
               <button
                 type="button"
                 onClick={handleSendText}
                 disabled={!connected || !inputValue.trim()}
                 title="发送"
                 style={{
-                  width: 36,
-                  height: 36,
+                  width: isMobile ? 32 : 36,
+                  height: isMobile ? 32 : 36,
                   borderRadius: '50%',
                   border: 'none',
                   background: connected && inputValue.trim() ? '#b0c4ff' : '#e8e8e8',
@@ -710,7 +757,7 @@ export default function WebSocketChatPage() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 16,
+                  fontSize: isMobile ? 14 : 16,
                   transition: 'background 0.2s, color 0.2s',
                 }}
               >
@@ -765,29 +812,37 @@ export default function WebSocketChatPage() {
           </Button>,
         ]}
         onCancel={() => setPreviewImage({ open: false, url: '', name: '' })}
-        width={720}
-        centered
+        width={isMobile ? '95%' : 720}
+        centered={!isMobile}
       >
-        <img src={previewImage.url} alt="" style={{ width: '100%', maxHeight: '70vh', objectFit: 'contain' }} />
+        <img src={previewImage.url} alt="" style={{ width: '100%', maxHeight: isMobile ? '60vh' : '70vh', objectFit: 'contain' }} />
       </Modal>
 
-      <Drawer title="聊天记录" placement="right" width={400} open={historyOpen} onClose={() => setHistoryOpen(false)}>
+      <Drawer title={isMobile ? "历史记录" : "聊天记录"} placement="right" width={drawerWidth} open={historyOpen} onClose={() => setHistoryOpen(false)} styles={{ body: { padding: isMobile ? 12 : 16 } }}>
         <div style={{ maxHeight: 'calc(100vh - 120px)', overflow: 'auto' }}>
           {messages
             .filter((m) => m.type !== MsgType.USER_LIST)
             .map((m) => (
-              <div key={m.id} style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid #f0f0f0' }}>
-                <Text type="secondary" style={{ fontSize: 12 }}>
+              <div key={m.id} style={{ marginBottom: isMobile ? 12 : 16, paddingBottom: isMobile ? 8 : 12, borderBottom: '1px solid #f0f0f0' }}>
+                <Text type="secondary" style={{ fontSize: isMobile ? 10 : 12 }}>
                   {msgTime(m)} · {m.type}
                   {m.payload?.username ? ` · ${m.payload.username}` : ''}
                 </Text>
-                <div style={{ marginTop: 6 }}>{renderPayload(m, false)}</div>
+                <div style={{ marginTop: 6 }}>{renderPayload(m, false, isMobile)}</div>
               </div>
             ))}
         </div>
       </Drawer>
 
-      <Modal title="设置昵称" open={settingsOpen} onOk={saveUsername} onCancel={() => setSettingsOpen(false)} okText="保存">
+      <Modal 
+        title="设置昵称" 
+        open={settingsOpen} 
+        onOk={saveUsername} 
+        onCancel={() => setSettingsOpen(false)} 
+        okText="保存"
+        width={isMobile ? '90%' : 400}
+        styles={{ body: { paddingTop: isMobile ? 12 : undefined } }}
+      >
         <p style={{ color: '#888', fontSize: 13 }}>修改后需刷新页面，才会用新昵称重新连接 WebSocket。</p>
         <Input placeholder="昵称" value={tempUsername} onChange={(e) => setTempUsername(e.target.value)} maxLength={32} />
       </Modal>
