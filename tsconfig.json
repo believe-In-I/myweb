@@ -19,4 +19,4 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
-  }, "include": ["src"], "references": [{ "path": "./tsconfig.node.json" }]}
+  }, "include": ["src", "public/generate-md-manifest.js"], "references": [{ "path": "./tsconfig.node.json" }]}

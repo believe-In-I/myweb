@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter, HashRouter, Routes, Route, NavLink, useLocation, useNavigate, Navigate, Outlet } from 'react-router-dom';
 import { Layout, Menu, Breadcrumb, Typography, Avatar, Dropdown, Space, ConfigProvider, App, Button, message, Drawer } from 'antd';
-import { PictureOutlined, CopyOutlined, BoxPlotOutlined, FileDoneOutlined, FileWordOutlined, VideoCameraOutlined, AliwangwangOutlined, CloudUploadOutlined, CodeOutlined, LineChartOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined, MessageOutlined, MenuOutlined } from '@ant-design/icons';
+import { PictureOutlined, CopyOutlined, BoxPlotOutlined, FileDoneOutlined, FileWordOutlined, VideoCameraOutlined, AliwangwangOutlined, CloudUploadOutlined, CodeOutlined, LineChartOutlined, UserOutlined, SettingOutlined, LogoutOutlined, BarsOutlined, MessageOutlined, MenuOutlined, EnvironmentOutlined, ApiOutlined, PlusCircleOutlined, BookOutlined, TrophyOutlined, ApartmentOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import ApiTestPage from './pages/ApiTestPage';
 import HeartPage from './pages/HeartPage';
 import LovePage from './pages/Love';
-import G6RelationGraphPage from './pages/G6RelationGraph/G6RelationGraph';
+import G6RelationGraphPage from './pages/G6RelationGraph';
 import VirtualScrollPage from './pages/VirtualScrollPage';
 import ThreeJs from '@/pages/threeJs';
 import IndexedDBTestPage from './pages/IndexedDBTestPage';
@@ -15,8 +15,14 @@ import AIChatPage from './pages/AIChatPage';
 import WebSocketChatPage from './pages/WebSocketChatPage';
 import MarkdownToMermaidPage from './pages/markdownToMermaid/index.tsx';
 import MarkdownPreviewPage from './pages/markdownPreview/index.tsx';
+import MarkdownNavigatorPage from './pages/MarkdownNavigator/index';
 import FeishuEditorPage from './pages/FeishuEditor';
 import ClipboardTestPage from './pages/ClipboardTestPage';
+import CanvasMapPage from './pages/CanvasMapPage';
+import AddServicePage from './pages/AddServicePage/AddServicePage';
+import ProjectTransferPage from './pages/transfer';
+import ArcheryRangePage from './pages/ArcheryRange';
+import FamilyTreePage from './pages/FamilyTree';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import LoginPage from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -69,6 +75,8 @@ const routes = [
   { path: '/home/apiTest', nameKey: 'menu.apiTest', icon: <CloudUploadOutlined /> },
   { path: '/home/ai-chat', nameKey: 'menu.aiChat', icon: <AliwangwangOutlined /> },
   { path: '/home/ws-chat', nameKey: 'menu.wsChat', icon: <MessageOutlined /> },
+  { path: '/home/canvas-map', nameKey: 'menu.canvasMap', icon: <EnvironmentOutlined /> },
+  { path: '/home/add-service', nameKey: 'menu.addService', icon: <PlusCircleOutlined /> },
   { path: '/home/g6-dagre', nameKey: 'menu.g6Relation', icon: <LineChartOutlined /> },
   { path: '/home/virtual-scroll', nameKey: 'menu.virtualScroll', icon: <BarsOutlined /> },
   { path: '/home/canvas-virtual-list', nameKey: 'menu.canvasVirtualList', icon: <PictureOutlined /> },
@@ -78,6 +86,10 @@ const routes = [
   { path: '/home/markdown-preview', nameKey: 'menu.markdownPreview', icon: <FileDoneOutlined /> },
   { path: '/home/feishu-editor', nameKey: 'menu.feishuEditor', icon: <FileWordOutlined /> },
   { path: '/home/clipboard-test', nameKey: 'menu.clipboardTest', icon: <CopyOutlined /> },
+  { path: '/home/project-transfer', nameKey: 'menu.projectTransfer', icon: <UserOutlined /> },
+  { path: '/home/markdown-navigator', nameKey: 'menu.markdownNavigator', icon: <BookOutlined /> },
+  { path: '/home/archery-range', nameKey: 'menu.archeryRange', icon: <TrophyOutlined /> },
+  { path: '/home/family-tree', nameKey: 'menu.familyTree', icon: <ApartmentOutlined /> },
 ];
 
 // 内容区域组件
@@ -226,6 +238,40 @@ const MobileSidebar = ({ onClose }) => {
       />
     </div>
   );
+};
+
+const spliceTags = (key, methodName, interfaceName) => {
+  // 1. 先拿到所有命中的标签key
+  const allMatchedKeys = Object.keys(RISK_CONFIGS).filter((item) => {
+    const list = RISK_CONFIGS[item].list;
+    if (!Array.isArray(list)) return false;
+    return list.includes(methodName);
+  });
+
+  // 2. 定义优先级分组：高危/低危 为高优先级，其他为低优先级
+  const highPriorityKeys = ['highRisk', 'lowRisk']; // 高优先级标签
+  const lowPriorityKeys = ['add', 'del', 'change', 'importantLink']; // 低优先级标签（含重要链路）
+
+  // 3. 分离高、低优先级命中的标签
+  const matchedHigh = allMatchedKeys.filter(k => highPriorityKeys.includes(k));
+  const matchedLow = allMatchedKeys.filter(k => lowPriorityKeys.includes(k));
+
+  // 4. 应用规则：如果有高优先级命中，直接过滤掉所有低优先级标签
+  const finalMatchedKeys = matchedHigh.length > 0 ? matchedHigh : matchedLow;
+
+  // 5. 兜底：如果没命中，用传入的key
+  const labelKeys = finalMatchedKeys.length ? finalMatchedKeys : [key];
+
+  // 调试打印（可保留）
+  console.log(labelKeys, ' ', methodName, '----', interfaceName);
+
+  // 6. 生成标签（原逻辑不变）
+  const label = getLabel(interfaceName, labelKeys);
+
+  // 🔴 彻底删除：不再修改原数组！所有过滤逻辑在内存中完成，不污染data
+  // matchdKeys.forEach(...) 这段代码直接删掉，永远不要执行！
+
+  return label;
 };
 
 // 桌面端侧边栏组件
@@ -497,6 +543,16 @@ export default function RouterApp() {
                   <WebSocketChatPage />
                 </ProtectedRoute>
               } />
+              <Route path="/home/canvas-map" element={
+                <ProtectedRoute>
+                  <CanvasMapPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/add-service" element={
+                <ProtectedRoute>
+                  <AddServicePage />
+                </ProtectedRoute>
+              } />
               <Route path="/home/g6-dagre" element={
                 <ProtectedRoute>
                   <G6RelationGraphPage />
@@ -542,6 +598,26 @@ export default function RouterApp() {
               <Route path="/home/clipboard-test" element={
                 <ProtectedRoute>
                   <ClipboardTestPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/project-transfer" element={
+                <ProtectedRoute>
+                  <ProjectTransferPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/markdown-navigator" element={
+                <ProtectedRoute>
+                  <MarkdownNavigatorPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/archery-range" element={
+                <ProtectedRoute>
+                  <ArcheryRangePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/home/family-tree" element={
+                <ProtectedRoute>
+                  <FamilyTreePage />
                 </ProtectedRoute>
               } />
             </Route>

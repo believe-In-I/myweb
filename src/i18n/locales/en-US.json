@@ -7,6 +7,7 @@
     "apiTest": "OSS",
     "aiChat": "AI Chat",
     "wsChat": "Live Chat",
+    "canvasMap": "Canvas Map",
     "g6Relation": "G6 Relation Graph",
     "updateHistory": "Update History",
     "virtualScroll": "Virtual Scroll",
@@ -17,7 +18,13 @@
     "markdownToMermaid": "Mermaid Chart",
     "markdownPreview": "Markdown Preview",
     "feishuEditor": "Rich Text Editor",
-    "clipboardTest": "Clipboard Test"
+    "clipboardTest": "Clipboard Test",
+    "customService": "Key Service Interfaces",
+    "addService": "Add Service",
+    "projectTransfer": "Project Transfer",
+    "markdownNavigator": "Document Center",
+    "archeryRange": "Archery Range",
+    "familyTree": "Family Tree"
   },
   "header": {
     "profile": "Profile",
@@ -28,6 +35,36 @@
   "breadCrumb": {
     "home": "Home",
     "unknown": "Unknown Page"
+  },
+  "canvasMap": {
+    "title": "Interactive Canvas Map",
+    "subtitle": "Drag to pan • Scroll to zoom • Click to add markers • Responsive design",
+    "markers": "Markers",
+    "noMarkers": "No markers yet",
+    "noMarkersHint": "Click on the map to add markers",
+    "addMarker": "Add Marker",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "resetView": "Reset View",
+    "editMarker": "Edit Marker",
+    "markerTitle": "Title",
+    "markerDescription": "Description",
+    "markerType": "Type",
+    "markerCoordinate": "Coordinates",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirmDelete": "Confirm Delete",
+    "deleteMessage": "Are you sure you want to delete the marker",
+    "createdAt": "Created",
+    "markerCount": "markers",
+    "zoomLevel": "Zoom",
+    "centerPoint": "Center",
+    "canvasSize": "Canvas",
+    "markerTypeDefault": "Default",
+    "markerTypeStart": "Start",
+    "markerTypeEnd": "End",
+    "markerTypePoi": "POI"
   },
   "canvasVirtualList": {
     "title": "Canvas + Tile Virtual List",
@@ -44,5 +81,85 @@
     "tilePxHeight": "Tile Pixel Height",
     "renderStrategy": "Render Strategy",
     "clickedItem": "Clicked"
+  },
+  "customService": {
+    "title": "Custom Key Service Interfaces",
+    "subtitle": "Manage key service interfaces published by modules, monitor change impacts and send notifications",
+    "leftPanel": {
+      "title": "Custom Key Services List",
+      "addService": "Add Service",
+      "empty": "No custom services yet",
+      "addFirst": "Add First Service"
+    },
+    "table": {
+      "serviceName": "Service Name",
+      "serviceCode": "Service Code",
+      "moduleName": "Module",
+      "status": "Status",
+      "affectCheck": "Impact Check",
+      "notifyCheck": "Notification",
+      "recentChanges": "Recent Changes",
+      "changesUnit": "times",
+      "addedAt": "Added At",
+      "action": "Action",
+      "viewDetail": "View Detail",
+      "delete": "Delete",
+      "affectTip": "Enable to check if this service is affected",
+      "notifyTip": "Enable to receive change notifications",
+      "total": "Total",
+      "items": "items"
+    },
+    "status": {
+      "normal": "Normal",
+      "warning": "Warning",
+      "error": "Error"
+    },
+    "addModal": {
+      "title": "Add Custom Service",
+      "searchPlaceholder": "Search by service name, code or description",
+      "moduleFilter": "Filter by module",
+      "selected": "Selected Service",
+      "public": "Public",
+      "private": "Private",
+      "noServices": "No matching services found"
+    },
+    "detailModal": {
+      "title": "Service Details",
+      "chainTab": "Chain Details",
+      "docTab": "Function Doc",
+      "impactTab": "Impact Analysis",
+      "chainTitle": "Service Chain",
+      "totalImpacts": "Total Impacts",
+      "highRisk": "High Risk",
+      "mediumRisk": "Medium Risk",
+      "lowRisk": "Low Risk"
+    },
+    "chain": {
+      "gateway": "Gateway",
+      "service": "Service",
+      "database": "Database",
+      "responseTime": "Response Time"
+    },
+    "common": {
+      "on": "ON",
+      "off": "OFF",
+      "refresh": "Refresh",
+      "cancel": "Cancel",
+      "add": "Add",
+      "confirm": "Confirm",
+      "close": "Close",
+      "button": "Button"
+    },
+    "selectServiceWarning": "Please select a service first",
+    "serviceExistsWarning": "This service already exists in the list",
+    "addSuccess": "Added successfully",
+    "confirmDelete": "Confirm Delete",
+    "deleteConfirmMessage": "Are you sure you want to delete this custom service?",
+    "deleteSuccess": "Deleted successfully",
+    "enableAffect": "Impact check enabled",
+    "disableAffect": "Impact check disabled",
+    "enableNotify": "Notification enabled",
+    "disableNotify": "Notification disabled",
+    "refreshSuccess": "Refreshed successfully"
   }
 }

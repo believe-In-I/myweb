@@ -7,6 +7,7 @@
     "apiTest": "OSS",
     "aiChat": "AI",
     "wsChat": "实时聊天",
+    "canvasMap": "Canvas 地图",
     "g6Relation": "G6 关系图",
     "updateHistory": "更新记录",
     "virtualScroll": "虚拟滚动",
@@ -17,7 +18,13 @@
     "markdownToMermaid": "Markdown 转 Mermaid",
     "markdownPreview": "Markdown 预览",
     "feishuEditor": "富文本编辑器",
-    "clipboardTest": "Clipboard 测试"
+    "clipboardTest": "Clipboard 测试",
+    "customService": "关键服务接口",
+    "addService": "添加服务",
+    "projectTransfer": "项目穿梭",
+    "markdownNavigator": "文档中心",
+    "archeryRange": "射箭训练场",
+    "familyTree": "家族族谱"
   },
   "header": {
     "profile": "个人中心",
@@ -28,6 +35,36 @@
   "breadCrumb": {
     "home": "首页",
     "unknown": "未知页面"
+  },
+  "canvasMap": {
+    "title": "交互式 Canvas 地图",
+    "subtitle": "拖拽平移 • 滚轮缩放 • 点击添加标注 • 响应式设计",
+    "markers": "标注列表",
+    "noMarkers": "暂无标注",
+    "noMarkersHint": "点击地图添加标注",
+    "addMarker": "添加标注",
+    "zoomIn": "放大",
+    "zoomOut": "缩小",
+    "resetView": "重置视图",
+    "editMarker": "编辑标注",
+    "markerTitle": "标题",
+    "markerDescription": "描述",
+    "markerType": "类型",
+    "markerCoordinate": "坐标位置",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "confirmDelete": "确认删除",
+    "deleteMessage": "确定删除标注",
+    "createdAt": "创建于",
+    "markerCount": "个标注",
+    "zoomLevel": "缩放",
+    "centerPoint": "中心",
+    "canvasSize": "画布",
+    "markerTypeDefault": "默认",
+    "markerTypeStart": "起点",
+    "markerTypeEnd": "终点",
+    "markerTypePoi": "兴趣点"
   },
   "canvasVirtualList": {
     "title": "Canvas + 瓦片虚拟列表",
@@ -44,5 +81,85 @@
     "tilePxHeight": "瓦片像素高度",
     "renderStrategy": "渲染策略",
     "clickedItem": "点击了"
+  },
+  "customService": {
+    "title": "自定义关键服务接口",
+    "subtitle": "管理模块发布的关键服务接口，监控变更影响并发送通知",
+    "leftPanel": {
+      "title": "自定义关键服务列表",
+      "addService": "添加服务",
+      "empty": "暂无自定义服务",
+      "addFirst": "添加第一个服务"
+    },
+    "table": {
+      "serviceName": "服务名称",
+      "serviceCode": "服务编码",
+      "moduleName": "所属模块",
+      "status": "状态",
+      "affectCheck": "影响判断",
+      "notifyCheck": "通知开关",
+      "recentChanges": "近期变更",
+      "changesUnit": "次",
+      "addedAt": "添加时间",
+      "action": "操作",
+      "viewDetail": "查看详情",
+      "delete": "删除",
+      "affectTip": "开启后将判断该服务是否受影响",
+      "notifyTip": "开启后将接收该服务的变更通知",
+      "total": "共",
+      "items": "条"
+    },
+    "status": {
+      "normal": "正常",
+      "warning": "警告",
+      "error": "错误"
+    },
+    "addModal": {
+      "title": "添加自定义服务",
+      "searchPlaceholder": "搜索服务名称、编码或描述",
+      "moduleFilter": "筛选模块",
+      "selected": "已选择服务",
+      "public": "公开",
+      "private": "内部",
+      "noServices": "未找到匹配的服务"
+    },
+    "detailModal": {
+      "title": "服务详情",
+      "chainTab": "链路详情",
+      "docTab": "功能详情",
+      "impactTab": "影响分析",
+      "chainTitle": "服务链路",
+      "totalImpacts": "影响总数",
+      "highRisk": "高风险",
+      "mediumRisk": "中风险",
+      "lowRisk": "低风险"
+    },
+    "chain": {
+      "gateway": "网关",
+      "service": "服务",
+      "database": "数据库",
+      "responseTime": "响应时间"
+    },
+    "common": {
+      "on": "开",
+      "off": "关",
+      "refresh": "刷新",
+      "cancel": "取消",
+      "add": "添加",
+      "confirm": "确认",
+      "close": "关闭",
+      "button": "按钮"
+    },
+    "selectServiceWarning": "请先选择一个服务",
+    "serviceExistsWarning": "该服务已在列表中",
+    "addSuccess": "添加成功",
+    "confirmDelete": "确认删除",
+    "deleteConfirmMessage": "确定要删除该自定义服务吗？",
+    "deleteSuccess": "删除成功",
+    "enableAffect": "已启用影响判断",
+    "disableAffect": "已禁用影响判断",
+    "enableNotify": "已启用通知",
+    "disableNotify": "已禁用通知",
+    "refreshSuccess": "刷新成功"
   }
 }

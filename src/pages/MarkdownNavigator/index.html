@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>季度数据分析报告 - Q2</title>
+    <style>
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: #f3f3f3;
+            font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+            color: #333;
+            font-size: 13px
+        }
+
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 12px;
+            color: #555
+        }
+
+        .topbar .menu {
+            cursor: default
+        }
+
+        .topbar .menu:hover {
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 2px
+        }
+
+        .toolbar {
+            background: #fafafa;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 4px 16px;
+            font-size: 12px;
+            color: #666
+        }
+
+        .container {
+            max-width: 980px;
+            margin: 20px auto;
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 30px 50px;
+            min-height: calc(100vh - 80px)
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #222;
+            margin: 0 0 4px;
+            border-bottom: 2px solid #2b579a;
+            padding-bottom: 8px
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 20px
+        }
+
+        h2 {
+            font-size: 15px;
+            color: #2b579a;
+            margin: 24px 0 10px;
+            font-weight: 600
+        }
+
+        p {
+            line-height: 1.7;
+            margin: 8px 0;
+            text-align: justify
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 12px
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            text-align: left
+        }
+
+        th {
+            background: #f0f0f0;
+            font-weight: 600
+        }
+
+        .chart-wrap {
+            margin: 14px 0;
+            border: 1px solid #ddd;
+            background: #fafafa;
+            padding: 8px;
+            position: relative
+        }
+
+        .chart-cap {
+            font-size: 11px;
+            color: #888;
+            text-align: center;
+            margin-top: 4px
+        }
+
+        canvas {
+            display: block;
+            background: #fdfdfd;
+            width: 100%
+        }
+
+        .stat-row {
+            font-size: 11px;
+            color: #999;
+            margin-top: 6px;
+            display: flex;
+            gap: 20px;
+            justify-content: flex-end
+        }
+
+        .stat-row span {
+            font-variant-numeric: tabular-nums
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+            font-size: 11px;
+            color: #aaa;
+            text-align: center
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.92);
+            z-index: 99;
+            align-items: center;
+            justify-content: center
+        }
+
+        #overlay.show {
+            display: flex
+        }
+
+        #overlay .box {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 30px 50px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1)
+        }
+
+        #overlay button {
+            margin-top: 14px;
+            padding: 6px 20px;
+            border: 1px solid #2b579a;
+            background: #fff;
+            color: #2b579a;
+            cursor: pointer;
+            font-size: 12px
+        }
+
+        #overlay button:hover {
+            background: #2b579a;
+            color: #fff
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <span style="font-weight:600;color:#2b579a">文件</span>
+        <span class="menu">开始</span><span class="menu">插入</span><span class="menu">设计</span><span
+            class="menu">布局</span><span class="menu">引用</span><span class="menu">视图</span>
+        <span style="margin-left:auto;color:#999">季度数据分析报告 - Q2 [兼容模式] - Word</span>
+    </div>
+    <div class="toolbar">页面 1 / 12 &nbsp;·&nbsp; 4,283 个字 &nbsp;·&nbsp; 中文（中国） &nbsp;·&nbsp; 修订</div>
+
+    <div class="container">
+        <h1>季度运营数据可视化分析</h1>
+        <div class="subtitle">编制部门：数据分析组 &nbsp;|&nbsp; 报告周期：Q2 &nbsp;|&nbsp; 版本：v2.3</div>
+
+        <h2>一、概述</h2>
+        <p>本季度针对核心业务指标进行了多维度采样与趋势建模，结合历史同比与环比数据，对若干关键节点进行回归分析。整体来看，主要指标在波动区间内运行平稳，部分异常点已在第三章节展开说明。</p>
+
+        <h2>二、关键指标</h2>
+        <table>
+            <tr>
+                <th>指标</th>
+                <th>本期值</th>
+                <th>上期值</th>
+                <th>同比</th>
+                <th>状态</th>
+            </tr>
+            <tr>
+                <td>采样吞吐量</td>
+                <td><span id="m1">0</span></td>
+                <td>1,240</td>
+                <td>+12.4%</td>
+                <td>正常</td>
+            </tr>
+            <tr>
+                <td>异常拦截数</td>
+                <td><span id="m2">0</span></td>
+                <td>86</td>
+                <td>-3.1%</td>
+                <td>关注</td>
+            </tr>
+            <tr>
+                <td>处理等级</td>
+                <td><span id="m3">1</span></td>
+                <td>1</td>
+                <td>—</td>
+                <td>正常</td>
+            </tr>
+            <tr>
+                <td>剩余配额</td>
+                <td><span id="m4">3</span></td>
+                <td>3</td>
+                <td>—</td>
+                <td>充足</td>
+            </tr>
+        </table>
+
+        <h2>三、数据可视化</h2>
+        <p>下图为本季度采样数据的实时分布情况，横轴表示采样位置，纵轴反映分布密度。点击图表区域并使用方向键可调整观察焦点。</p>
+
+        <div class="chart-wrap">
+            <canvas id="game" width="880" height="520"></canvas>
+            <div class="chart-cap">图 3-1 &nbsp;季度采样数据动态分布图（数据来源：内部监测系统）</div>
+            <div class="stat-row"><span>焦点位置: <b id="posTxt">--</b></span><span>当前层级: <b
+                        id="lvTxt">1</b></span><span>样本计数: <b id="scTxt">0</b></span></div>
+        </div>
+
+        <p>从图 3-1 可以观察到，数据点的分布存在一定的聚簇特征，特别是在区间中段表现出较为明显的拐点。建议在后续分析中针对该区域进行更细粒度的采样。</p>
+
+        <h2>四、结论与建议</h2>
+        <p>综上所述，本季度数据整体呈现稳健上升趋势。建议下季度持续关注异常点的演化路径，并适当调整采样策略以提升整体数据质量。详细方法论参见附录 A。</p>
+
+        <div class="footer">— 第 1 页，共 12 页 —</div>
+    </div>
+
+    <div id="overlay">
+        <div class="box">
+            <div style="font-size:14px;color:#333">采样中断</div>
+            <div id="overSub" style="color:#888;font-size:12px;margin-top:6px"></div>
+            <button onclick="restart()">重新采样</button>
+        </div>
+    </div>
+
+    <script>
+        const cvs = document.getElementById('game'), ctx = cvs.getContext('2d');
+        const W = cvs.width, H = cvs.height;
+        const keys = {};
+        addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; if ([' ', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(e.key.toLowerCase())) e.preventDefault(); }, { passive: false });
+        addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+        // 低调配色：灰、深蓝、暗绿——像图表
+        const C = { bg1: '#fdfdfd', bg2: '#f5f5f5', grid: '#e8e8e8', player: '#2b579a', bullet: '#666', enemy1: '#888', enemy2: '#a87', enemy3: '#955', boss: '#544', ebullet: '#b44', particle: '#999', pwr: '#487', life: '#7a8' };
+
+        let stars = [], bullets = [], enemies = [], ebullets = [], particles = [], powerups = [];
+        let score = 0, life = 3, level = 1, frame = 0, gameOver = false, boss = null, bossKilled = 0;
+        let player = { x: W / 2, y: H - 60, w: 30, h: 32, cool: 0, powerLv: 1, invul: 0 };
+
+        for (let i = 0; i < 60; i++)stars.push({ x: Math.random() * W, y: Math.random() * H, s: Math.random() * 1.2 + 0.3 });
+
+        function spawnEnemy() {
+            const r = Math.random();
+            let type = 'small';
+            if (r < 0.15 && level >= 2) type = 'medium';
+            if (r < 0.05 && level >= 3) type = 'large';
+            const sizes = { small: { w: 22, h: 20, hp: 1, sp: 1.8, score: 10, color: C.enemy1 }, medium: { w: 32, h: 30, hp: 4, sp: 1.2, score: 40, color: C.enemy2 }, large: { w: 46, h: 42, hp: 10, sp: 0.8, score: 120, color: C.enemy3 } };
+            const s = sizes[type];
+            enemies.push({ x: Math.random() * (W - s.w) + s.w / 2, y: -s.h, ...s, type, fireCool: 60 + Math.random() * 60 });
+        }
+
+        function spawnBoss() {
+            boss = { x: W / 2, y: -80, w: 110, h: 75, hp: 200 + level * 50, maxHp: 200 + level * 50, sp: 1.3, dir: 1, fireCool: 30, phase: 0 };
+        }
+
+        function shoot() {
+            if (player.cool > 0) return;
+            player.cool = 9;
+            const lv = player.powerLv;
+            if (lv === 1) bullets.push({ x: player.x, y: player.y - 16, vx: 0, vy: -8, dmg: 1 });
+            else if (lv === 2) { bullets.push({ x: player.x - 7, y: player.y - 14, vx: 0, vy: -8, dmg: 1 }); bullets.push({ x: player.x + 7, y: player.y - 14, vx: 0, vy: -8, dmg: 1 }); }
+            else { bullets.push({ x: player.x, y: player.y - 18, vx: 0, vy: -9, dmg: 2 }); bullets.push({ x: player.x - 10, y: player.y - 12, vx: -1.3, vy: -8, dmg: 1 }); bullets.push({ x: player.x + 10, y: player.y - 12, vx: 1.3, vy: -8, dmg: 1 }); }
+        }
+
+        function explode(x, y, color, n = 10) {
+            for (let i = 0; i < n; i++)particles.push({ x, y, vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4, life: 25, color });
+        }
+
+        function hit(a, b) { return Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2; }
+
+        function update() {
+            if (gameOver) return;
+            frame++;
+            stars.forEach(s => { s.y += s.s; if (s.y > H) { s.y = 0; s.x = Math.random() * W; } });
+
+            const sp = 4.5;
+            if (keys['arrowleft'] || keys['a']) player.x -= sp;
+            if (keys['arrowright'] || keys['d']) player.x += sp;
+            if (keys['arrowup'] || keys['w']) player.y -= sp;
+            if (keys['arrowdown'] || keys['s']) player.y += sp;
+            player.x = Math.max(15, Math.min(W - 15, player.x));
+            player.y = Math.max(20, Math.min(H - 20, player.y));
+            if (player.cool > 0) player.cool--;
+            if (player.invul > 0) player.invul--;
+            shoot();
+
+            if (!boss) {
+                if (frame % Math.max(20, 55 - level * 3) === 0) spawnEnemy();
+                if (bossKilled < level && score >= level * 500) { spawnBoss(); bossKilled++; }
+            }
+
+            bullets = bullets.filter(b => { b.x += b.vx; b.y += b.vy; return b.y > -20 && b.x > -20 && b.x < W + 20; });
+            ebullets = ebullets.filter(b => { b.x += b.vx; b.y += b.vy; return b.y < H + 20 && b.x > -20 && b.x < W + 20; });
+
+            enemies.forEach(e => {
+                e.y += e.sp; e.fireCool--;
+                if (e.fireCool <= 0 && e.type !== 'small' && e.y > 0 && e.y < H - 80) {
+                    e.fireCool = e.type === 'large' ? 45 : 90;
+                    const dx = player.x - e.x, dy = player.y - e.y, d = Math.hypot(dx, dy) || 1;
+                    ebullets.push({ x: e.x, y: e.y + e.h / 2, vx: dx / d * 3.5, vy: dy / d * 3.5, w: 5, h: 5 });
+                    if (e.type === 'large') {
+                        ebullets.push({ x: e.x, y: e.y + e.h / 2, vx: -1.8, vy: 2.5, w: 5, h: 5 });
+                        ebullets.push({ x: e.x, y: e.y + e.h / 2, vx: 1.8, vy: 2.5, w: 5, h: 5 });
+                    }
+                }
+            });
+            enemies = enemies.filter(e => e.y < H + 50 && e.hp > 0);
+
+            if (boss) {
+                if (boss.y < 70) boss.y += 1;
+                else {
+                    boss.x += boss.sp * boss.dir;
+                    if (boss.x < 70 || boss.x > W - 70) boss.dir *= -1;
+                    boss.fireCool--;
+                    if (boss.fireCool <= 0) {
+                        boss.fireCool = 28; boss.phase++;
+                        if (boss.phase % 4 === 0) {
+                            for (let a = 0; a < 8; a++) { const ang = a / 8 * Math.PI * 2 + frame * 0.01; ebullets.push({ x: boss.x, y: boss.y + 25, vx: Math.cos(ang) * 2.6, vy: Math.sin(ang) * 2.6 + 1, w: 6, h: 6 }); }
+                        } else {
+                            const dx = player.x - boss.x, dy = player.y - boss.y, d = Math.hypot(dx, dy) || 1;
+                            ebullets.push({ x: boss.x - 25, y: boss.y + 25, vx: dx / d * 4.2, vy: dy / d * 4.2, w: 6, h: 6 });
+                            ebullets.push({ x: boss.x + 25, y: boss.y + 25, vx: dx / d * 4.2, vy: dy / d * 4.2, w: 6, h: 6 });
+                        }
+                    }
+                }
+            }
+
+            bullets.forEach(b => {
+                enemies.forEach(e => {
+                    if (hit({ x: b.x, y: b.y, w: 5, h: 10 }, e)) {
+                        e.hp -= b.dmg; b.y = -100; explode(b.x, b.y, '#bbb', 4);
+                        if (e.hp <= 0) {
+                            score += e.score; explode(e.x, e.y, e.color, 15);
+                            if (Math.random() < 0.1) powerups.push({ x: e.x, y: e.y, type: Math.random() < 0.5 ? 'P' : 'L' });
+                        }
+                    }
+                });
+                if (boss && hit({ x: b.x, y: b.y, w: 5, h: 10 }, boss)) {
+                    boss.hp -= b.dmg; b.y = -100; explode(b.x, b.y, '#bbb', 4);
+                    if (boss.hp <= 0) { score += 500; explode(boss.x, boss.y, C.boss, 40); boss = null; level++; }
+                }
+            });
+
+            powerups.forEach(p => p.y += 1.8);
+            powerups = powerups.filter(p => {
+                if (hit({ x: p.x, y: p.y, w: 18, h: 18 }, player)) {
+                    if (p.type === 'P' && player.powerLv < 3) player.powerLv++;
+                    else if (p.type === 'L') life++;
+                    else score += 50;
+                    return false;
+                }
+                return p.y < H;
+            });
+
+            if (player.invul <= 0) {
+                enemies.forEach(e => { if (hit(e, player)) { e.hp = 0; explode(player.x, player.y, C.player, 20); life--; player.invul = 90; player.powerLv = Math.max(1, player.powerLv - 1); } });
+                ebullets.forEach(b => { if (hit({ x: b.x, y: b.y, w: b.w, h: b.h }, { x: player.x, y: player.y, w: player.w - 12, h: player.h - 12 })) { b.y = H + 100; explode(player.x, player.y, C.player, 12); life--; player.invul = 90; } });
+                if (boss && hit(boss, player)) { explode(player.x, player.y, C.player, 20); life -= 2; player.invul = 120; }
+            }
+
+            if (life <= 0) { gameOver = true; showOver(); }
+
+            particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.life--; });
+            particles = particles.filter(p => p.life > 0);
+
+            document.getElementById('m1').textContent = (1240 + score).toLocaleString();
+            document.getElementById('m2').textContent = 86 + Math.floor(score / 50);
+            document.getElementById('m3').textContent = player.powerLv;
+            document.getElementById('m4').textContent = life;
+            document.getElementById('posTxt').textContent = Math.round(player.x) + ', ' + Math.round(player.y);
+            document.getElementById('lvTxt').textContent = level;
+            document.getElementById('scTxt').textContent = score;
+        }
+
+        function drawShip(x, y, color, flip = false, scale = 1) {
+            ctx.save(); ctx.translate(x, y); if (flip) ctx.rotate(Math.PI); ctx.scale(scale, scale);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(0, -14); ctx.lineTo(-13, 11); ctx.lineTo(-6, 6); ctx.lineTo(0, 13); ctx.lineTo(6, 6); ctx.lineTo(13, 11);
+            ctx.closePath(); ctx.fill();
+            ctx.restore();
+        }
+
+        function drawGrid() {
+            ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
+            for (let x = 0; x <= W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+            for (let y = 0; y <= H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+            // 坐标轴标签
+            ctx.fillStyle = '#bbb'; ctx.font = '10px Arial';
+            for (let x = 0; x <= W; x += 80)ctx.fillText(x, x + 2, H - 4);
+            for (let y = 40; y <= H; y += 80)ctx.fillText(H - y, 2, y - 2);
+        }
+
+        function draw() {
+            // 图表背景
+            const g = ctx.createLinearGradient(0, 0, 0, H);
+            g.addColorStop(0, C.bg1); g.addColorStop(1, C.bg2);
+            ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+            drawGrid();
+
+            // 散点（原星空，伪装成数据点）
+            stars.forEach(s => { ctx.fillStyle = `rgba(160,160,160,${s.s / 1.5})`; ctx.fillRect(s.x, s.y, s.s + 0.5, s.s + 0.5); });
+
+            // 玩家
+            if (player.invul <= 0 || frame % 6 < 3) drawShip(player.x, player.y, C.player);
+
+            // 子弹（细线）
+            ctx.strokeStyle = C.bullet; ctx.lineWidth = 1.5;
+            bullets.forEach(b => { ctx.beginPath(); ctx.moveTo(b.x, b.y - 6); ctx.lineTo(b.x, b.y + 2); ctx.stroke(); });
+
+            // 敌人
+            enemies.forEach(e => {
+                if (e.type === 'small') drawShip(e.x, e.y, e.color, true, 0.85);
+                else {
+                    ctx.fillStyle = e.color;
+                    ctx.fillRect(e.x - e.w / 2, e.y - e.h / 2, e.w, e.h);
+                    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                    ctx.fillRect(e.x - 3, e.y - 3, 6, 6);
+                }
+            });
+
+            // Boss
+            if (boss) {
+                ctx.fillStyle = C.boss;
+                ctx.fillRect(boss.x - boss.w / 2, boss.y - boss.h / 2, boss.w, boss.h);
+                ctx.fillStyle = '#766';
+                ctx.fillRect(boss.x - 40, boss.y - 15, 80, 15);
+                // HP条做成进度条样式
+                ctx.fillStyle = '#eee'; ctx.fillRect(30, 15, W - 60, 6);
+                ctx.fillStyle = '#a55'; ctx.fillRect(30, 15, (W - 60) * boss.hp / boss.maxHp, 6);
+                ctx.strokeStyle = '#ccc'; ctx.strokeRect(30, 15, W - 60, 6);
+            }
+
+            // 敌弹
+            ctx.fillStyle = C.ebullet;
+            ebullets.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, b.w / 2, 0, Math.PI * 2); ctx.fill(); });
+
+            // 道具
+            powerups.forEach(p => {
+                ctx.fillStyle = p.type === 'P' ? C.pwr : C.life;
+                ctx.fillRect(p.x - 9, p.y - 9, 18, 18);
+                ctx.fillStyle = '#fff'; ctx.font = 'bold 11px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText(p.type, p.x, p.y);
+            });
+
+            // 粒子
+            particles.forEach(p => { ctx.fillStyle = p.color; ctx.globalAlpha = p.life / 25; ctx.fillRect(p.x - 1.5, p.y - 1.5, 3, 3); });
+            ctx.globalAlpha = 1;
+        }
+
+        function showOver() {
+            document.getElementById('overSub').textContent = '样本计数：' + score + ' &nbsp; 层级：' + level;
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        function restart() {
+            score = 0; life = 3; level = 1; frame = 0; gameOver = false;
+            player = { x: W / 2, y: H - 60, w: 30, h: 32, cool: 0, powerLv: 1, invul: 0 };
+            bullets = []; enemies = []; ebullets = []; particles = []; powerups = []; boss = null; bossKilled = 0;
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        function loop() { update(); draw(); requestAnimationFrame(loop); }
+        loop();
+    </script>
+</body>
+
+</html>

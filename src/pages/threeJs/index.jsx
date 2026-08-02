@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import useResponsive from '@/hooks/useResponsive';
@@ -17,6 +17,12 @@ const ThreeJsDemo = () => {
   // 引用 DOM 元素
   const containerRef = useRef(null);
   
+  // Web Worker 相关状态
+  const [galaxyLoading, setGalaxyLoading] = useState(false);
+  const [particleCount, setParticleCount] = useState(0);
+  const galaxyPointsRef = useRef(null);
+  const workerRef = useRef(null);
+  
   // 响应式状态
   const { isMobile, isTablet } = useResponsive();
   
@@ -33,11 +39,36 @@ const ThreeJsDemo = () => {
     // 初始化 Three.js 场景
     initScene();
     
+    // ========== Web Worker 初始化 ==========
+    // Vite 支持通过 import.meta.url 加载 Worker，且 type: 'module' 允许使用 ES Module
+    console.log('import.meta.url', import.meta.url)
+    workerRef.current = new Worker(
+      new URL('./geometryWorker.js', import.meta.url),
+      { type: 'module' }
+    );
+    
+    // 监听 Worker 返回的消息
+    workerRef.current.onmessage = function (e) {
+      const { type, payload } = e.data;
+      if (type === 'galaxyResult') {
+        addGalaxyToScene(payload);
+        setGalaxyLoading(false);
+      }
+    };
+    
     // 启动动画循环
     animate();
     
     // 清理函数
     return () => {
+      // 终止 Worker（释放 Worker 线程资源）
+      if (workerRef.current) workerRef.current.terminate();
+      // 清理星系粒子
+      if (galaxyPointsRef.current) {
+        scene.remove(galaxyPointsRef.current);
+        galaxyPointsRef.current.geometry.dispose();
+        galaxyPointsRef.current.material.dispose();
+      }
       if (controls) controls.dispose();
       if (renderer) renderer.dispose();
     };
@@ -146,6 +177,64 @@ const ThreeJsDemo = () => {
     renderer.render(scene, camera);
   };
   
+  // ==================== Web Worker 相关函数 ====================
+  
+  /**
+   * 将 Worker 计算出的粒子数据添加到 Three.js 场景
+   * @param {{ positions: ArrayBuffer, colors: ArrayBuffer, count: number }} data
+   */
+  const addGalaxyToScene = (data) => {
+    const { positions: posBuffer, colors: colBuffer, count } = data;
+    
+    // 移除旧星系（如果用户多次点击生成）
+    if (galaxyPointsRef.current) {
+      scene.remove(galaxyPointsRef.current);
+      galaxyPointsRef.current.geometry.dispose();
+      galaxyPointsRef.current.material.dispose();
+    }
+    
+    // 从 ArrayBuffer 还原为 Float32Array
+    const positions = new Float32Array(posBuffer);
+    const colors = new Float32Array(colBuffer);
+    
+    // 创建 BufferGeometry 并填充属性
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    
+    // 粒子材质（使用顶点颜色，每个粒子独立颜色）
+    const material = new THREE.PointsMaterial({
+      size: 0.04,
+      vertexColors: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      transparent: true,
+      opacity: 0.9,
+    });
+    
+    // 创建粒子系统并添加到场景
+    galaxyPointsRef.current = new THREE.Points(geometry, material);
+    scene.add(galaxyPointsRef.current);
+    
+    setParticleCount(count);
+  };
+  
+  /**
+   * 点击按钮：通过 Web Worker 异步生成星系
+   * - 主线程不会被阻塞，动画继续运行
+   * - 计算完成后自动渲染到场景
+   */
+  const handleGenerateGalaxy = () => {
+    if (galaxyLoading || !workerRef.current) return;
+    setGalaxyLoading(true);
+    setParticleCount(0);
+    
+    workerRef.current.postMessage({
+      type: 'generateGalaxy',
+      payload: { count: 50000, arms: 4, radius: 6 }
+    });
+  };
+  
   return (
     <div style={{ padding: paddingSize }}>
       <h1 style={{ 
@@ -165,6 +254,35 @@ const ThreeJsDemo = () => {
           overflow: 'hidden'
         }} 
       />
+      {/* Web Worker 控制按钮 */}
+      <div style={{ 
+        marginTop: isMobile ? 12 : 16, 
+        display: 'flex',
+        gap: 10,
+        flexWrap: 'wrap',
+        alignItems: 'center'
+      }}>
+        <button 
+          onClick={handleGenerateGalaxy}
+          disabled={galaxyLoading}
+          style={{
+            padding: '8px 20px',
+            backgroundColor: galaxyLoading ? '#ccc' : '#0077ff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 6,
+            cursor: galaxyLoading ? 'not-allowed' : 'pointer',
+            fontSize: isMobile ? 12 : 14
+          }}
+        >
+          {galaxyLoading ? '⏳ 计算中...' : '✨ 生成螺旋星系'}
+        </button>
+        {particleCount > 0 && (
+          <span style={{ fontSize: isMobile ? 12 : 14, color: '#666' }}>
+            {particleCount.toLocaleString()} 个粒子（Worker 异步计算，不阻塞主线程）
+          </span>
+        )}
+      </div>
       <div style={{ 
         marginTop: isMobile ? 12 : 20, 
         padding: isMobile ? 12 : 15, 

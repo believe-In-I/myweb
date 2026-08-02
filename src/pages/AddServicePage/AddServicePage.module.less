@@ -1,0 +1,452 @@
+.addServicePage {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f0f2f5;
+}
+
+/* 顶部导航栏 */
+.header {
+  background: #fff;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.headerContent h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.backButton {
+  border-radius: 6px;
+}
+
+/* 主体内容区域 */
+.mainContent {
+  flex: 1;
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+/* 左侧面板 */
+.leftPanel {
+  width: 380px;
+  min-width: 280px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  overflow: auto;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+}
+
+/* 搜索框区域 */
+.searchSection {
+  margin-bottom: 16px;
+}
+
+.searchInput {
+  border-radius: 8px;
+}
+
+.moduleSelect {
+  margin-bottom: 12px;
+}
+
+.moduleSelectLabel {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.panelTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* 服务卡片 */
+.serviceCard {
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.serviceCard:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.serviceItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.serviceName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.serviceDescription {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.serviceMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category {
+  font-size: 11px;
+  color: #1890ff;
+  background: #f0f7ff;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.version {
+  font-size: 11px;
+  color: #52c41a;
+  background: #f6ffed;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.methodTag {
+  font-size: 10px;
+  padding: 0 4px;
+  margin: 0;
+}
+
+/* 选中状态 */
+.selectedItem {
+  border: 2px solid #1890ff !important;
+  background: #f0f7ff !important;
+  border-radius: 8px;
+}
+
+/* 右侧面板 */
+.rightPanel {
+  flex: 1;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  overflow: auto;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+}
+
+/* 详情容器 */
+.detailContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.detailTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.tabs {
+  flex: 1;
+}
+
+/* 服务信息卡片 */
+.serviceInfoCard {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  color: #fff;
+}
+
+.serviceInfoTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.serviceInfoPath {
+  font-size: 13px;
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+
+.serviceInfoMeta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* 详情内容 */
+.detailContent {
+  padding: 4px 0;
+}
+
+.detailSection {
+  margin-bottom: 24px;
+}
+
+.detailSectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  background: #1890ff;
+  border-radius: 50%;
+}
+
+/* 链路图 */
+.chainContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.chainNode {
+  padding: 12px 16px;
+  border-radius: 8px;
+  min-width: 100px;
+  text-align: center;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chainNode:hover {
+  transform: translateY(-2px);
+}
+
+.chainNodeNormal {
+  background: #f6ffed;
+  border-color: #b7eb8f;
+}
+
+.chainNodeWarning {
+  background: #fffbe6;
+  border-color: #ffe58f;
+}
+
+.chainNodeName {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.chainNodeType {
+  font-size: 11px;
+  color: #8c8c8c;
+}
+
+.chainArrow {
+  color: #d9d9d9;
+  font-size: 18px;
+}
+
+/* 配置卡片 */
+.configCard {
+  margin-top: 12px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #f0f0f0;
+}
+
+.configRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.configLabel {
+  font-size: 13px;
+  color: #262626;
+}
+
+.configDesc {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin: 0;
+}
+
+/* MD文档 */
+.markdownContent {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #595959;
+  max-height: 400px;
+  overflow: auto;
+}
+
+.markdownContent pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: inherit;
+}
+
+/* 空状态 */
+.emptyDetail {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #bfbfbf;
+}
+
+.emptyIcon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.emptyText {
+  font-size: 16px;
+  color: #8c8c8c;
+  margin-bottom: 8px;
+}
+
+.emptyHint {
+  font-size: 13px;
+  color: #d9d9d9;
+}
+
+/* 分割条 */
+.resizeHandle {
+  width: 8px;
+  cursor: col-resize;
+  background: transparent;
+  position: relative;
+  z-index: 10;
+}
+
+.resizeBar {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 48px;
+  background: #e8e8e8;
+  border-radius: 2px;
+  transition: background 0.2s;
+}
+
+.resizeBarActive {
+  background: #1890ff;
+}
+
+/* 弹窗样式 */
+.confirmModal {
+  padding: 0;
+}
+
+.modalServiceInfo {
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #f0f0f0;
+  margin-bottom: 16px;
+}
+
+.modalServiceTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.modalServicePath {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 4px;
+}
+
+.modalServiceDesc {
+  font-size: 12px;
+  color: #595959;
+}
+
+.autoConfigTip {
+  padding: 12px;
+  background: #e6f7ff;
+  border-radius: 6px;
+  border: 1px solid #91d5ff;
+  margin-top: 16px;
+}
+
+.autoConfigTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: #1890ff;
+  font-weight: 500;
+}
+
+.autoConfigContent {
+  font-size: 12px;
+  color: #595959;
+}
+
+.autoConfigItem {
+  margin-bottom: 4px;
+}
