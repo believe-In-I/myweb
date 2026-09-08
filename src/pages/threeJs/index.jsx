@@ -242,15 +242,14 @@ const ThreeJsDemo = () => {
         marginBottom: isMobile ? 12 : 20,
         fontSize: isMobile ? 18 : undefined
       }}>
-        {isMobile ? 'Three.js Demo' : 'Three.js 入门 Demo'}
       </h1>
       <div 
         ref={containerRef} 
         style={{ 
           width: '100%', 
           height: containerHeight,
-          border: '1px solid #ddd',
-          borderRadius: '8px',
+          // border: '1px solid #ddd',
+          // borderRadius: '8px',
           overflow: 'hidden'
         }} 
       />
@@ -262,7 +261,7 @@ const ThreeJsDemo = () => {
         flexWrap: 'wrap',
         alignItems: 'center'
       }}>
-        <button 
+        {/* <button 
           onClick={handleGenerateGalaxy}
           disabled={galaxyLoading}
           style={{
@@ -281,27 +280,7 @@ const ThreeJsDemo = () => {
           <span style={{ fontSize: isMobile ? 12 : 14, color: '#666' }}>
             {particleCount.toLocaleString()} 个粒子（Worker 异步计算，不阻塞主线程）
           </span>
-        )}
-      </div>
-      <div style={{ 
-        marginTop: isMobile ? 12 : 20, 
-        padding: isMobile ? 12 : 15, 
-        backgroundColor: '#f5f5f5', 
-        borderRadius: '8px',
-        fontSize: isMobile ? 12 : 14
-      }}>
-        <h3 style={{ fontSize: isMobile ? 14 : 16, marginBottom: isMobile ? 8 : 12 }}>学习要点</h3>
-        <ul style={{ paddingLeft: isMobile ? 16 : 20, margin: 0 }}>
-          <li><strong>场景 (Scene)</strong>：Three.js 的容器，用于放置所有 3D 对象</li>
-          <li><strong>相机 (Camera)</strong>：定义观察视角，决定我们看到的内容</li>
-          <li><strong>渲染器 (Renderer)</strong>：将 3D 场景渲染到 2D 屏幕上</li>
-          <li><strong>几何体 + 材质</strong>：定义 3D 对象的形状和外观</li>
-          <li><strong>光源 (Light)</strong>：为场景提供照明</li>
-          <li><strong>轨道控制器</strong>：允许用户交互控制相机视角</li>
-        </ul>
-        <p style={{ marginTop: isMobile ? 8 : 10, fontSize: isMobile ? 12 : 14, color: '#666' }}>
-          尝试使用鼠标操作：拖动旋转视角，滚轮缩放，Shift+拖动平移
-        </p>
+        )} */}
       </div>
     </div>
   );
