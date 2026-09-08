@@ -1,0 +1,32 @@
+[
+  {
+    "name": "api-guide.md",
+    "path": "/data/api-guide.md",
+    "title": "API 接口文档"
+  },
+  {
+    "name": "database-design.md",
+    "path": "/data/database-design.md",
+    "title": "数据库设计文档"
+  },
+  {
+    "name": "deployment.md",
+    "path": "/data/deployment.md",
+    "title": "部署运维手册"
+  },
+  {
+    "name": "faq.md",
+    "path": "/data/faq.md",
+    "title": "常见问题解答"
+  },
+  {
+    "name": "frontend-guide.md",
+    "path": "/data/frontend-guide.md",
+    "title": "前端开发规范"
+  },
+  {
+    "name": "sample.md",
+    "path": "/data/sample.md",
+    "title": "欢迎使用文档中心"
+  }
+]
